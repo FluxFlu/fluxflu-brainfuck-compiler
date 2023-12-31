@@ -1,0 +1,43 @@
+{
+  "name": "@fluxflu/bc",
+  "version": "1.0.0",
+  "description": "The best optimizing brainfuck compiler.",
+  "author": "Missy \"FluxFlu\" (the God)",
+  "keywords": [
+    "compiler",
+    "brainfuck",
+    "optimizing"
+  ],
+  
+  "license": "GPL-3.0",
+  
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FluxFlu/fbc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FluxFlu/fbc/issues"
+  },
+  "homepage": "https://github.com/FluxFlu/fbc#readme",
+
+  "main": "./src/index.js",
+  "bin": {
+    "fbc": "./src/index.js"
+  },
+  "files": [
+    "!*.test.js",
+    "./src/**",
+    "./LICENSE",
+    "./README",
+    "package.json",
+    "./paisley.js"
+  ],
+  "scripts": {
+    "test": "jest --colors",
+    "lint": "npx eslint ./ --global \"__dirname,process\""
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0"
+  }
+}
