@@ -7,11 +7,9 @@ const testDir = path.join(__dirname, "../test_programs");
 jest.mock("./utils/compiler_flags");
 
 const mockflags = new Map([
-    ["O0", false],
-    ["O1", false],
-    ["O2", true],
+    ["full-optimize", true],
     ["tape-size", "3000"],
-    ["final", false],
+    ["final", true],
 ]);
 
 jest.mock("./utils/compiler_flags", () => {

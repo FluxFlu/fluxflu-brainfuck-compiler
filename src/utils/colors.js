@@ -6,16 +6,13 @@ const colors = {
     BOLD_BLUE: "\x1b[1;34m",
     WHITE: "\x1b[0;29m",
     BOLD_WHITE: "\x1b[1;29m",
-    RESET: "\x1b[0m",
-}
+    RESET: "\x1b[0m"
+};
 
-module.exports = colors;
-
-const { getCompilerFlag } = require("./compiler_flags");
-
+// We check if the current terminal allows colors.
 let colorSupported = false;
 
-if (getCompilerFlag("colors"))
+if (process.argv.includes("--colors"))
     colorSupported = true;
 
 if (process.env.FORCE_COLOR || process.env.COLORTERM || process.env.CLICOLOR) {
@@ -37,3 +34,5 @@ if (process.stderr.isTTY && process.stderr.hasColors(16)) {
 if (!colorSupported) {
     Object.keys(colors).forEach(key => colors[key] = "");
 }
+
+module.exports = colors;

@@ -3,8 +3,12 @@ const { UNKNOWN, pushResult } = require("../simulation_utils");
 function left(State) {
     const { ptr, loopsCompromised, positionCompromised, token } = State;
 
-    // If the current tape is arbitrary,
-    // we have to treat the "left" operation differently.
+    // If the current tape is compromised (read: has been reset),
+    //  we have to treat the "left" operation differently.
+    //
+    // This is because the pointer shouldn't move left at zero,
+    //  but we don't know if we are actually at zero or not.
+    //
     // Basically, we cut our losses on the optimizations we've done so far, and start over from scratch.
     if (loopsCompromised.at(-1) || positionCompromised) {
         pushResult(State);
@@ -34,4 +38,4 @@ function left(State) {
     State.tapeNotRaw = true;
 }
 
-module.exports = { left }
+module.exports = { left };

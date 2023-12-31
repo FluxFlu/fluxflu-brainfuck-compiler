@@ -27,18 +27,9 @@ const binding = [
     /* OUTPUT       */ () => "putchar(*p);",
     /* PRINT        */ value => `fputs("${value}", stdout);`,
     /* SET          */ value => value ? `(*p) = ${value};` : "(*p) = 0;",
-    /* CREATE_STATE */ (value, i) => {
+    /* CREATE_STATE */ value => {
         const tape = value.tape;
         const keys = Object.keys(tape);
-        // console.log(value.ptr);
-        // console.log((
-        //     "p = tape + " + value.ptr + ";\n"
-        //     ))
-        // process.exit(1)
-        // if (keys.length == 1 && i == 2999) {
-        //     console.log(value);
-        //     process.exit(1);
-        // }
         return (
             // Set each part of the tape to expected values
             keys.map(byte => `p[${byte}] = ${tape[byte]};\n`).join("") +
@@ -55,11 +46,9 @@ const binding = [
 
 function finalize (file) {
     let output = "#include <stdio.h>\n\nint main() {\nchar tape[" + getCompilerFlag("tape-size") + "] = {0};\nchar *p = tape;\n\n";
-    // console.log(output)
     for (let i = 0; i < file.length; i++) {
         output += binding[file[i].instr](file[i].value, i) + "\n";
     }
-    // console.log(output)
     return output + "\nreturn 0;\n}";
 }
 

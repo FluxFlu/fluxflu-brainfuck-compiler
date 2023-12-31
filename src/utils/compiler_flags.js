@@ -5,11 +5,12 @@ const shorthand = new Map([
 ]);
 
 const flags = new Map([
-    ["full-optimize", "false"],
-    ["final", "false"],
+    ["full-optimize", false],
+    ["final", false],
     ["output", ""],
     ["filename", ""],
-    ["raw", "false"],
+    ["raw", false],
+    ["colors", false],
     
     ["tape-size", "3000"],
 ]);
@@ -93,7 +94,7 @@ function handleArguments(args) {
 
             flags.set(argument, true);
         } else {
-            // Sometimes, users will specify `=` to try and pass arguments. Eg, `--tape-size=3000`.
+            // Sometimes, users will use `=` to try and specify argument values. Eg, `--tape-size=3000`.
             // If this is the case, we must inform them of the correct syntax.
             if (argument.split("=").length > 1) {
                 argument = argument.split("=");
@@ -110,4 +111,4 @@ function handleArguments(args) {
 
 const getCompilerFlag = flag => flags.get(flag);
 
-module.exports = { handleArguments, getCompilerFlag }
+module.exports = { handleArguments, getCompilerFlag };

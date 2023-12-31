@@ -7,12 +7,10 @@ const operators = new Map(
 
 function tokenize(file) {
     file = file
-        .replaceAll("\t", "    ")
+        .replaceAll("\t",   "    ")
         .replaceAll("\r\n", "\n")
         .replaceAll("\n\r", "\n")
-        .replaceAll("\r", "\n");
-    // .replaceAll(/\/\/.*?$/gm, "")
-    // .replaceAll(/\;\;.*?$/gm, "")
+        .replaceAll("\r",   "\n");
     const tokens = [];
     let currentString;
     let line = 0;

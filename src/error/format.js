@@ -1,7 +1,7 @@
-const { RESET, GREEN, BOLD_BLUE, BOLD_WHITE } = require("../utils/colors");
+const colors = require("../utils/colors");
 
-const note  = `${BOLD_WHITE}Note: ${RESET}`;
-const help  = `${BOLD_BLUE}Help: ${RESET}`;
-const quote = `${GREEN}* ${RESET}`;
+const note  = `${colors.BOLD_WHITE}Note: ${colors.RESET}`;
+const help  = `${colors.BOLD_BLUE}Help: ${colors.RESET}`;
+const quote = `${colors.GREEN}* ${colors.RESET}`;
 
-module.exports = { note, help, quote }
+module.exports = { note, help, quote };

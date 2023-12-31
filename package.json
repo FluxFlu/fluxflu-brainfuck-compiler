@@ -1,7 +1,7 @@
 {
   "name": "@fluxflu/bc",
   "version": "1.0.0",
-  "description": "An optimising compiler for brainfuck.",
+  "description": "The only brutally optimizing brainfuck compiler.",
   "author": "Missy \"FluxFlu\" (the God)",
   "keywords": [
     "compiler",
@@ -17,13 +17,13 @@
     "url": "https://github.com/FluxFlu/fbc/issues"
   },
   "homepage": "https://github.com/FluxFlu/fbc#readme",
-  "main": "./src/index.js",
+  "main": "./src/fbc.js",
   "bin": {
-    "fbc": "./src/index.js"
+    "fbc": "./src/fbc.js"
   },
   "files": [
-    "!*.test.js",
     "./src/**",
+    "!*.test.js",
     "./LICENSE",
     "./README",
     "package.json",
@@ -38,6 +38,6 @@
     "jest": "^29.7.0"
   },
   "dependencies": {
-    "braincomp": "^1.1.0"
+    "braincomp": "^1.2.1"
   }
 }

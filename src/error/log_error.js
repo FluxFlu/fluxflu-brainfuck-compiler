@@ -1,9 +1,8 @@
-
+const { logCompilerError } = require("./compiler_error");
+const { RESET, BOLD_RED } = require("../utils/colors");
+const { help } = require("./format");
 
 const errors = {
-    "generic": x => [
-        x
-    ],
     "unbalanced_parenthesis": (x, filename) => [
         "Unbalanced Parenthesis at " + filename +
         (x.line === null ? "" :
@@ -34,6 +33,12 @@ const errors = {
     ],
     "re_specified": argument => [
         "Argument [" + argument + "] specified multiple times."
+    ],
+    "no_filename": () => [
+        "No filename specified."
+    ],
+    "file_not_exist": filename => [
+        "Specified file [" + filename + "] doesn't exist."
     ]
 };
 
@@ -49,9 +54,3 @@ function logError(error, ...args) {
 }
 
 module.exports = { logError };
-
-const { RESET, BOLD_RED } = require("../utils/colors");
-const { getCompilerFlag } = require("../utils/compiler_flags");
-const { logCompilerError } = require("./compiler_error");
-const { help } = require("./format");
-

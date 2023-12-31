@@ -28,9 +28,7 @@ p += 10;
 (*p) = getchar();
 *p -= 10;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 *p -= 37;
 p += 9;
@@ -91,9 +89,7 @@ p++;
 (*p)++;
 if (p - 4 > tape) p -= 4; else p = tape;
 }
-p[0] = 0;
 p += 8;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -106,9 +102,7 @@ p += 4;
 }
 if (p - 16 > tape) p -= 16; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p++;
 while (*p) {
@@ -119,9 +113,7 @@ p += 2;
 (*p)++;
 if (p - 5 > tape) p -= 5; else p = tape;
 }
-p[0] = 0;
 p += 9;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -134,9 +126,7 @@ p += 5;
 }
 if (p - 16 > tape) p -= 16; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 3;
 (*p) = 0;
@@ -168,9 +158,7 @@ p++;
 *p += 2;
 if (p > tape) p--;
 }
-p[0] = 0;
 p += 4;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -187,9 +175,7 @@ if (p - 3 > tape) p -= 3; else p = tape;
 }
 if (p - 15 > tape) p -= 15; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 8;
 while (*p) {
@@ -260,9 +246,7 @@ if (p > tape) p--;
 }
 }
 }
-p[0] = 0;
 p += 2;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -277,9 +261,7 @@ p += 4;
 }
 if (p - 19 > tape) p -= 19; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 7;
 while (*p) {
@@ -350,9 +332,7 @@ p++;
 }
 }
 }
-p[0] = 0;
 p += 3;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -367,9 +347,7 @@ if (p - 5 > tape) p -= 5; else p = tape;
 }
 if (p - 14 > tape) p -= 14; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 7;
 while (*p) {
@@ -378,9 +356,7 @@ if (p - 3 > tape) p -= 3; else p = tape;
 (*p)++;
 p += 3;
 }
-p[0] = 0;
 p += 3;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -391,9 +367,7 @@ p++;
 (*p)--;
 if (p > tape) p--;
 }
-p[0] = 0;
-p += 1;
-
+p++;
 while (*p) {
 if (p - 9 > tape) p -= 9; else p = tape;
 while (*p) {
@@ -408,15 +382,11 @@ p += 10;
 }
 if (p - 19 > tape) p -= 19; else p = tape;
 }
-p[0] = 0;
 p += 19;
-
 }
 if (p - 19 > tape) p -= 19; else p = tape;
 }
-p[0] = 0;
 p += 9;
-
 while (*p) {
 (*p)++;
 while (*p) {
@@ -455,9 +425,7 @@ p++;
 }
 if (p > tape) p--;
 }
-p[0] = 0;
 p += 8;
-
 while (*p) {
 if (p - 6 > tape) p -= 6; else p = tape;
 while (*p) {
@@ -474,9 +442,7 @@ p++;
 (*p)++;
 if (p - 4 > tape) p -= 4; else p = tape;
 }
-p[0] = 0;
 p += 6;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -498,9 +464,7 @@ if (p - 4 > tape) p -= 4; else p = tape;
 }
 if (p - 15 > tape) p -= 15; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 9;
 while (*p) {
@@ -509,9 +473,7 @@ if (p - 4 > tape) p -= 4; else p = tape;
 (*p)++;
 p += 4;
 }
-p[0] = 0;
-p += 1;
-
+p++;
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -524,9 +486,7 @@ p++;
 }
 if (p - 18 > tape) p -= 18; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 7;
 while (*p) {
@@ -587,9 +547,7 @@ p++;
 (*p)--;
 if (p > tape) p--;
 }
-p[0] = 0;
 p += 10;
-
 (*p)--;
 if (p - 10 > tape) p -= 10; else p = tape;
 }
@@ -603,13 +561,9 @@ if (p - 10 > tape) p -= 10; else p = tape;
 }
 }
 }
-p[0] = 0;
 p += 3;
-
 }
-p[0] = 0;
 p += 7;
-
 (*p)++;
 while (*p) {
 (*p) = 0;
@@ -633,9 +587,7 @@ if (p - 2 > tape) p -= 2; else p = tape;
 }
 if (p - 16 > tape) p -= 16; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 8;
 while (*p) {
@@ -646,9 +598,7 @@ if (p - 3 > tape) p -= 3; else p = tape;
 (*p)++;
 p += 2;
 }
-p[0] = 0;
 p += 2;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -661,9 +611,7 @@ if (p - 6 > tape) p -= 6; else p = tape;
 }
 if (p - 13 > tape) p -= 13; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 9;
 while (*p) {
@@ -734,21 +682,15 @@ p += 6;
 }
 }
 }
-p[0] = 0;
-p += 1;
-
+p++;
 }
-p[0] = 0;
 p += 7;
-
 }
 if (p - 17 > tape) p -= 17; else p = tape;
 while (*p) {
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 8;
 (*p) = 0;
@@ -766,9 +708,7 @@ p += 3;
 (*p)++;
 if (p - 3 > tape) p -= 3; else p = tape;
 }
-p[0] = 0;
 p += 5;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -847,18 +787,14 @@ p[0] = 255;
 
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 7;
-
 while (*p) {
 (*p)--;
 if (p - 11 > tape) p -= 11; else p = tape;
 (*p)++;
 p += 11;
 }
-p[0] = 0;
 p += 3;
-
 while (*p) {
 p += 7;
 while (*p) {
@@ -867,9 +803,7 @@ if (p - 11 > tape) p -= 11; else p = tape;
 *p += 5;
 p += 11;
 }
-p[0] = 0;
 p += 3;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -948,18 +882,14 @@ p[0] = 255;
 
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 8;
-
 while (*p) {
 (*p)--;
 if (p - 13 > tape) p -= 13; else p = tape;
 (*p)++;
 p += 13;
 }
-p[0] = 0;
 p += 2;
-
 while (*p) {
 p += 8;
 while (*p) {
@@ -968,17 +898,13 @@ if (p - 13 > tape) p -= 13; else p = tape;
 *p += 5;
 p += 13;
 }
-p[0] = 0;
 p += 2;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 16;
-
 }
 if (p - 6 > tape) p -= 6; else p = tape;
 while (*p) {
@@ -991,9 +917,7 @@ p++;
 (*p)++;
 if (p - 5 > tape) p -= 5; else p = tape;
 }
-p[0] = 0;
 p += 7;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -1015,9 +939,7 @@ if (p - 7 > tape) p -= 7; else p = tape;
 }
 if (p - 12 > tape) p -= 12; else p = tape;
 }
-p[0] = 0;
 p += 10;
-
 while (*p) {
 p += 7;
 while (*p) {
@@ -1026,9 +948,7 @@ if (p - 5 > tape) p -= 5; else p = tape;
 (*p)++;
 p += 5;
 }
-p[0] = 0;
 p += 3;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -1054,15 +974,11 @@ p += 10;
 }
 if (p - 18 > tape) p -= 18; else p = tape;
 }
-p[0] = 0;
 p += 18;
-
 }
 if (p - 18 > tape) p -= 18; else p = tape;
 }
-p[0] = 0;
 p += 8;
-
 while (*p) {
 p++;
 (*p)--;
@@ -1101,9 +1017,7 @@ if (p > tape) p--;
 }
 }
 }
-p[0] = 0;
-p += 1;
-
+p++;
 (*p)++;
 while (*p) {
 (*p) = 0;
@@ -1123,17 +1037,13 @@ if (p - 4 > tape) p -= 4; else p = tape;
 while (*p) {
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 4;
-
 (*p)++;
 if (p - 10 > tape) p -= 10; else p = tape;
 }
 if (p - 4 > tape) p -= 4; else p = tape;
 }
-p[0] = 0;
 p += 20;
-
 while (*p) {
 p += 10;
 }
@@ -1141,9 +1051,7 @@ if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
 if (p - 10 > tape) p -= 10; else p = tape;
 }
-p[0] = 0;
 p += 4;
-
 (*p)--;
 while (*p) {
 (*p) = 0;
@@ -1160,9 +1068,7 @@ if (p - 2 > tape) p -= 2; else p = tape;
 (*p)++;
 p += 2;
 }
-p[0] = 0;
 p += 7;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -1191,9 +1097,7 @@ p[0] = 0;
 p += 4;
 
 }
-p[0] = 0;
 p += 6;
-
 while (*p) {
 p += 2;
 while (*p) {
@@ -1264,9 +1168,7 @@ if (p - 5 > tape) p -= 5; else p = tape;
 }
 }
 }
-p[0] = 0;
 p += 8;
-
 }
 if (p - 10 > tape) p -= 10; else p = tape;
 while (*p) {
@@ -1279,15 +1181,11 @@ p += 5;
 }
 if (p - 17 > tape) p -= 17; else p = tape;
 }
-p[0] = 0;
 p += 9;
-
 }
 if (p > tape) p--;
 }
-p[0] = 0;
 p += 2;
-
 while (*p) {
 p += 10;
 }

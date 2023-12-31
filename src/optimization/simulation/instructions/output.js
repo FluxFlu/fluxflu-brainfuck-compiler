@@ -27,4 +27,4 @@ function output(State) {
     }
 }
 
-module.exports = { output }
+module.exports = { output };

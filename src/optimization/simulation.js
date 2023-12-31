@@ -1,13 +1,11 @@
-// const { stdout } = require("process");
-
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, PRINT, CREATE_STATE, SET } = require("../preparation/utils/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, SET } = require("../preparation/utils/instructions");
 const { endLoop } = require("./simulation/instructions/endLoop");
 const { left } = require("./simulation/instructions/left");
 const { minus } = require("./simulation/instructions/minus");
 const { output } = require("./simulation/instructions/output");
 const { plus } = require("./simulation/instructions/plus");
 const { right } = require("./simulation/instructions/right");
-const { UNKNOWN, createState, pushResult } = require("./simulation/simulation_utils");
+const { UNKNOWN, pushResult } = require("./simulation/simulation_utils");
 const { startLoop } = require("./simulation/instructions/startLoop");
 const { logCompilerError } = require("../error/compiler_error");
 const { logError } = require("../error/log_error");
@@ -95,14 +93,6 @@ function simulate(file) {
             }
         }
     }
-    // compileProgress();
-    // for (let i = 0; i < chunks.length; i++) {
-    //     for (let j = 0; j < chunks[i].length; j++) {
-    //         result.push(chunks[i][j]);
-    //     }
-    // }
-    // process.exit(1)
-    // process.exit(1);
     return result;
 }
 

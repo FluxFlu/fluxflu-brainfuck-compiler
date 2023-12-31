@@ -4,10 +4,10 @@ const { END_LOOP, CREATE_STATE, RIGHT } = require("../../preparation/utils/instr
 const UNKNOWN = Symbol("UNKNOWN");
 
 function createState(result, tape, positionCompromised, ptr) {
-    // if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0 && positionCompromised) {
-    //     result.push({ instr: RIGHT, value: ptr });
-    //     return;
-    // }
+    if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0 && positionCompromised) {
+        result.push({ instr: RIGHT, value: ptr });
+        return;
+    }
     if (ptr === UNKNOWN) {
         logCompilerError("generic", "POINTER UNKNOWN.");
         console.trace();
@@ -24,14 +24,11 @@ function pushResult(State) {
 
     // If there is real data in the tape, we add that data to the program.
     if (State.tapeNotRaw) {
-        let current_state = stateStack.at(-1);
-        if (loopsCompromised.at(-1) || !current_state || current_state.ptr == UNKNOWN) {
-            current_state = { tape, ptr };
+        let currentState = stateStack.at(-1);
+        if (loopsCompromised.at(-1) || !currentState || currentState.ptr == UNKNOWN) {
+            currentState = { tape, ptr };
         }
-        // if (current_state.ptr == 2) {
-        //     console.log(stateStack, { tape, ptr }, current_state)
-        // }
-        createState(result, current_state.tape, loopsCompromised.at(-1) || positionCompromised, current_state.ptr);
+        createState(result, currentState.tape, loopsCompromised.at(-1) || positionCompromised, currentState.ptr);
         State.tapeNotRaw = false;
     }
 
@@ -50,4 +47,4 @@ function pushResult(State) {
     result.push(token);
 }
 
-module.exports = { UNKNOWN, createState, pushResult }
+module.exports = { UNKNOWN, createState, pushResult };
