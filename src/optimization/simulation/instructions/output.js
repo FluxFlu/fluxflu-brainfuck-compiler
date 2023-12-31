@@ -12,7 +12,6 @@ function output(State) {
         // Otherwise, we can print in a more efficient method, as determined at compile time.
 
         // We replace escape characters, as the program must compile to C.
-        console.log(String.fromCharCode(tape[ptr]), tape[ptr]);
         const printString = String.fromCharCode(tape[ptr])
             .replace("\\", "\\\\")
             .replace("\r", "\\r")

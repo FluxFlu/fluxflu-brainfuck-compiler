@@ -36,6 +36,6 @@ function removeDelimiter(str) {
 fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
     const fileName = capitalize(file.slice(0, -3));
     test("Sample Program: " + fileName, () => {
-        expect(removeDelimiter(compile(fs.readFileSync(path.join(testDir, file), "utf-8")))).toBe(removeDelimiter(fs.readFileSync(path.join(testDir, file.slice(0, -3) + ".c"), "utf-8")));
+        expect(removeDelimiter(compile(fs.readFileSync(path.join(testDir, file))).toString())).toBe(removeDelimiter(fs.readFileSync(path.join(testDir, file.slice(0, -3) + ".c")).toString()));
     });
 });

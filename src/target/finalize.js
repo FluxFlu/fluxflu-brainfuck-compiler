@@ -18,7 +18,8 @@ const binding = [
             (
                 getCompilerFlag("final") ? "" :
                     "\nif(p-tape>" + getCompilerFlag("tape-size") + "){fputs(\"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\", stdout);return 1;}"
-            )
+            ) + 
+            (getCompilerFlag("heap-memory") ? "while(p>size){size++;(*size)=0;}" : "")
         );
     },
     /* START_LOOP   */ () => "while(*p){",
@@ -50,7 +51,7 @@ function finalize (file) {
         output += "#include <stdlib.h>\n";
     output += "int main(){";
     if (getCompilerFlag("heap-memory")) {
-        output += "char*tape=malloc(" + getCompilerFlag("tape-size") + ");tape[0]=0;";
+        output += "char*tape=malloc(" + getCompilerFlag("tape-size") + ");tape[0]=0;char*size=tape;";
     } else {
         output += "char tape[" + getCompilerFlag("tape-size") + "]={0};";
     }

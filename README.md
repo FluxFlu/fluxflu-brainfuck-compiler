@@ -1,8 +1,18 @@
-# FluxFlu Brainfuck Compiler
-> The only brutally optimizing brainfuck compiler.
+<h1 align="center">
+    The FluxFlu Brainfuck Compiler
 
-![Endpoint Badge](https://img.shields.io/npm/dt/fbc)
+</h1>
+<h3 align="center">
+    The only brutally optimizing brainfuck compiler.
+</h3>
+
+<div align="center">
+
+![Endpoint Badge](https://img.shields.io/npm/dt/@fluxflu/bc)
 ![Static Badge](https://img.shields.io/badge/License-GPL--3.0-blue)
+</div>
+
+<br><br>
 
 # CLI Installation
 Pre-built binaries for FBC can be downloaded at [the releases page](https://github.com/FluxFlu/fbc/releases/).
@@ -13,18 +23,18 @@ It can also be installed using the NPM as follows.
 $ npm i @fluxflu/bc -g
 ```
 
-# Module Installation
-FBC can also be used as a Node.js module that programs can include. This can be done as normal.
-
-```sh
-$ npm i @fluxflu/bc
-```
-
 # Usage
 FBC is run with the syntax `fbc [file.bf] options`.
 
 ```sh
-$ fbc mandelbrot.bf --compress
+$ fbc mandelbrot.bf --final
+```
+
+# BFF Interop
+FBC can compile programs compressed to the BFF file format. It does this automatically.
+
+```sh
+$ fbc mandelbrot.bff --final
 ```
 
 # Licensing

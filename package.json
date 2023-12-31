@@ -26,12 +26,12 @@
     "!*.test.js",
     "./LICENSE",
     "./README",
-    "package.json",
-    "./paisley.js"
+    "package.json"
   ],
   "scripts": {
     "test": "jest --colors",
-    "lint": "npx eslint ./ --global \"__dirname,process\""
+    "lint": "npx eslint ./ --global \"__dirname,process\"",
+    "build": "pkg ./src/fbc.js --out-path ./build -C=Brotli"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
