@@ -11,14 +11,15 @@ module.exports = `
 --------------------------------------------------------------------------------
 
   --help -h                                         Display help message
+
   --full-optimize -f                                Apply all optimization levels
-  --raw                                             Disallow C interop
   --final                                           Don't include debug in runtime
+  --heap-memory                                     Put the tape on the heap
+
   --output -o   <filename>                          Specify output filename
 
   --tape-size   <size>                              Specify tape size.
-                                                    Must be either a positive int
-                                                    or "Dynamic".
+                                                    Must be a positive integer.
 
                                    File Input
 --------------------------------------------------------------------------------

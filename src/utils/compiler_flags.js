@@ -6,6 +6,7 @@ const shorthand = new Map([
 
 const flags = new Map([
     ["full-optimize", false],
+    ["heap-memory", false],
     ["final", false],
     ["output", ""],
     ["filename", ""],

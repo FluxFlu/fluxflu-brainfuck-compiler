@@ -79,7 +79,7 @@ function simulate(file) {
                 break;
             }
             default:
-                logCompilerError("generic", "INVALID INSTRUCTION: " + file[State.i]);
+                logCompilerError("generic", false, "INVALID INSTRUCTION: " + file[State.i].instr);
                 process.exit(1);
         }
     }

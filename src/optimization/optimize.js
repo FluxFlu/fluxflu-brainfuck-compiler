@@ -104,7 +104,7 @@ function optimize(file) {
                     repeatOptimizations = true;
                     continue;
                 }
-                result.push({ instr: file[i + 1].value, value: file[i + 1].value - file[i].value, line: file[i].line, char: file[i].char });
+                result.push({ instr: file[i + 1].instr, value: file[i + 1].value - file[i].value, line: file[i].line, char: file[i].char });
                 i++;
                 repeatOptimizations = true;
                 continue;
