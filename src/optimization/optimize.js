@@ -1,3 +1,4 @@
+const { logCompilerError } = require("../error/compiler_error");
 const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, PRINT, SET, CREATE_STATE } = require("../preparation/utils/instructions");
 
 const compressToBytes = new Map(
@@ -47,7 +48,7 @@ function optimize(file) {
         repeatOptimizations = false;
         for (let i = 0; i < file.length; i++) {
             if (file[i].instr == START_LOOP && file.length > i + 2 && (file[i + 1].instr == MINUS || file[i + 1].instr == PLUS) && file[i + 2].instr == END_LOOP) {
-                result.push({ instr: SET, value: 0 });
+                result.push({ instr: SET, value: 0, line: file[i].line, char: file[i].char });
                 i += 2;
                 repeatOptimizations = true;
                 continue;
@@ -63,10 +64,10 @@ function optimize(file) {
             }
             if (file.length > i + 1 && nullable.get(file[i].instr) && nullable.get(file[i + 1].instr)) {
                 if (!file[i + 1].instr) {
-                    console.error("Next option has no instruction? Aborting...");
+                    logCompilerError("generic", "Next option has no instruction? Aborting...");
                     process.exit(1);
                 }
-                result.push({ instr: file[i + 1].instr, value: file[i + 1].value });
+                result.push({ instr: file[i + 1].instr, value: file[i + 1].value, line: file[i + 1].line, char: file[i + 1].char });
                 i++;
                 repeatOptimizations = true;
                 continue;
@@ -85,7 +86,7 @@ function optimize(file) {
                 let num = file[i].value || 1;
                 for (; file.length > i + 1 && file[i + 1].instr == file[i].instr; i++)
                     num += file[i + 1].value || 1;
-                result.push({ instr: file[i].instr, value: num });
+                result.push({ instr: file[i].instr, value: num, line: file[i].line, char: file[i].char });
                 repeatOptimizations = true;
                 continue;
             }
@@ -98,17 +99,17 @@ function optimize(file) {
                     continue;
                 }
                 if (file[i].value > file[i + 1].value) {
-                    result.push({ instr: file[i].instr, value: file[i].value - file[i + 1].value });
+                    result.push({ instr: file[i].instr, value: file[i].value - file[i + 1].value, line: file[i].line, char: file[i].char });
                     i++;
                     repeatOptimizations = true;
                     continue;
                 }
-                result.push({ instr: file[i + 1].value, value: file[i + 1].value - file[i].value });
+                result.push({ instr: file[i + 1].value, value: file[i + 1].value - file[i].value, line: file[i].line, char: file[i].char });
                 i++;
                 repeatOptimizations = true;
                 continue;
             }
-            result.push({ instr: file[i].instr, value: file[i].value });
+            result.push({ instr: file[i].instr, value: file[i].value, line: file[i].line, char: file[i].char });
         }
         result.forEach(token => {
             if (!compressToBytes.get(token.instr))

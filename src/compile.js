@@ -10,10 +10,10 @@ function compile(file) {
     file = tokenize(file);
     file = createIntermediary(file);
 
-    if (!getCompilerFlag("O0"))
-        file = optimize(file);
+    // if (!getCompilerFlag("O0"))
+    file = optimize(file);
 
-    if (getCompilerFlag("O2")) {
+    if (getCompilerFlag("full-optimize")) {
         file = simulate(file);
         file = optimize(file);
     }

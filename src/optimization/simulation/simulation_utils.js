@@ -1,3 +1,4 @@
+const { logCompilerError } = require("../../error/compiler_error");
 const { END_LOOP, CREATE_STATE, RIGHT } = require("../../preparation/utils/instructions");
 
 const UNKNOWN = Symbol("UNKNOWN");
@@ -8,7 +9,7 @@ function createState(result, tape, positionCompromised, ptr) {
     //     return;
     // }
     if (ptr === UNKNOWN) {
-        console.error("POINTER UNKNOWN!");
+        logCompilerError("generic", "POINTER UNKNOWN.");
         console.trace();
         process.exit(1);
     }

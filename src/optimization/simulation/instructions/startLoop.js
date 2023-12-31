@@ -1,3 +1,4 @@
+const { logError } = require("../../../error/log_error");
 const { START_LOOP, END_LOOP } = require("../../../preparation/utils/instructions");
 const { UNKNOWN, createState } = require("../simulation_utils");
 
@@ -56,7 +57,7 @@ function startLoop(State) {
         while (braceBalance) {
             State.i++;
             if (file.length <= State.i)
-                throw "Unbalanced Parens";
+                logError("unbalanced_parenthesis", token, getCompilerFlag("filename"));
             if (file[State.i].instr == START_LOOP) braceBalance++;
             if (file[State.i].instr == END_LOOP) braceBalance--;
         }

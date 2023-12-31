@@ -9,6 +9,9 @@ const { plus } = require("./simulation/instructions/plus");
 const { right } = require("./simulation/instructions/right");
 const { UNKNOWN, createState, pushResult } = require("./simulation/simulation_utils");
 const { startLoop } = require("./simulation/instructions/startLoop");
+const { logCompilerError } = require("../error/compiler_error");
+const { logError } = require("../error/log_error");
+const { getCompilerFlag } = require("../utils/compiler_flags");
 
 function simulate(file) {
     const tape = [];
@@ -78,8 +81,18 @@ function simulate(file) {
                 break;
             }
             default:
-                console.error("INVALID INSTRUCTION: " + file[State.i]);
+                logCompilerError("generic", "INVALID INSTRUCTION: " + file[State.i]);
                 process.exit(1);
+        }
+    }
+
+    if (loopsCompromised.length) {
+        for (let i = 0; i < file.length; i++) {
+            if (file[i].instr == START_LOOP) {
+                file[i].line = null;
+                file[i].char = null;
+                logError("unbalanced_parenthesis", file[i], getCompilerFlag("filename"));
+            }
         }
     }
     // compileProgress();

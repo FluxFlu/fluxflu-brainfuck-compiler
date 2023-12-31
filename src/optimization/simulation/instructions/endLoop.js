@@ -1,3 +1,4 @@
+const { logError } = require("../../../error/log_error");
 const { UNKNOWN, createState } = require("../simulation_utils");
 
 function endLoop(State) {
@@ -10,6 +11,10 @@ function endLoop(State) {
     //
     // 2. The position is not compromised. If this is the case, then the current value must simply be uninitialized,
     //    And can be freely initialized to 0.
+
+    if (loops.length == 0) {
+        logError("unbalanced_parenthesis", token, getCompilerFlag("filename"));
+    }
 
     if (ptr !== UNKNOWN && tape[ptr] === undefined)
         tape[ptr] = (loopsCompromised.at(-1) || positionCompromised) ? UNKNOWN : 0;

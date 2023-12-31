@@ -1,4 +1,4 @@
-const { RESET, BLUE, RED } = require("../utils/colors");
+const { RESET, RED, BOLD_BLUE } = require("../utils/colors");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
 
@@ -17,7 +17,7 @@ const binding = [
             +
             (
                 getCompilerFlag("final") ? "" :
-                    "\nif (p - tape > " + getCompilerFlag("tape-size") + ") { fputs(\"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BLUE + "--tape-size {number}" + RESET + "\\n\", stdout); return 1; }"
+                    "\nif (p - tape > " + getCompilerFlag("tape-size") + ") { fputs(\"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\", stdout); return 1; }"
             )
         );
     },

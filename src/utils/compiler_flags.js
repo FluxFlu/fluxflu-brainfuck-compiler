@@ -1,35 +1,108 @@
+const { logError } = require("../error/log_error");
 
-
-const flags = new Map([
-    ["O0", false],
-    ["O1", false],
-    ["O2", false],
-    ["tape-size", "3000"],
-    // "regular-brainfuck": false,
-    ["final", false],
+const shorthand = new Map([
+    ["o", "output"],
 ]);
 
+const flags = new Map([
+    ["full-optimize", "false"],
+    ["final", "false"],
+    ["output", ""],
+    ["filename", ""],
+    ["raw", "false"],
+    
+    ["tape-size", "3000"],
+]);
+
+// These flags consume a value.
 const flagConsumes = new Map([
-    "tape-size"
+    "tape-size", "output"
 ].map(e => [e, true]));
 
+const wasSpecified = new Map();
+
 function handleArguments(args) {
+    if (args.includes("--help") || args.includes("-h")) {
+        console.log(require("./help"));
+        process.exit(0);
+    }
+
     args.shift();
     args.shift();
     let filename;
     let argument;
-    while (argument = args.shift()) {
-        if (argument[0] == "-")
-            argument = argument.slice(1);
-        if (argument[0] == "-")
-            argument = argument.slice(1);
+    while (argument = args.shift()?.toLowerCase()) {
 
+        if (argument[0] == "-") {
+            argument = argument.slice(1);
+        } else {
+            // If the first character isn't a dash, then this argument must be the input filename.
+
+            // If a filename was already specified, throw an error.
+            if (filename) {
+                logError("filename_overlap", filename, argument);
+            }
+            filename = argument;
+            flags.set("filename", argument);
+            continue;
+        }
+
+
+        if (argument[0] == "-") {
+            argument = argument.slice(1);
+        } else {
+            // If there is only one dash, assume a shorthand is being used.
+            if (shorthand.has(argument)) {
+                argument = shorthand.get(argument);
+            } else {
+                // But if said shorthand doesn't exist, throw an error.
+                logError("invalid_arguments", "-" + argument);
+            }
+        }
+
+        // If this argument consumes a value...
         if (flagConsumes.has(argument)) {
+            
+            // If there is no value, or the "value" is just another flag, throw an error
+            if (args.length === 0 || args[0][0] == "-") {
+                logError("no_argument_value", "--" + argument, flags.get(argument), args[0]);
+            }
+
+            // Check to make sure that the tape size is a positive integer.
+            if (argument == "tape-size") {
+                if (~~+args[0] !== +args[0]) {
+                    logError("invalid_tape_size", args[0]);
+                }
+                args[0] = (+args[0]).toString();
+            }
+
+            // If this argument was already specified, throw an error.
+            if (wasSpecified.has(argument)) {
+                logError("re_specified", argument);
+            }
+            wasSpecified.set(argument, true);
+
             flags.set(argument, args.shift());
-        } else if (flags.has(argument)) {
+        } else if (flags.has(argument) && argument !== "filename") {
+            
+            // If this argument was already specified, throw an error.
+            if (wasSpecified.has(argument)) {
+                logError("re_specified", argument);
+            }
+            wasSpecified.set(argument, true);
+
             flags.set(argument, true);
         } else {
-            filename = argument;
+            // Sometimes, users will specify `=` to try and pass arguments. Eg, `--tape-size=3000`.
+            // If this is the case, we must inform them of the correct syntax.
+            if (argument.split("=").length > 1) {
+                argument = argument.split("=");
+                if (flags.has(argument[0])) {
+                    logError("invalid_arguments", "--" + argument.join("="), "--" + argument[0] + " " + argument[1]);
+                }
+            }
+
+            logError("invalid_arguments", "--" + argument);
         }
     }
     return filename;
