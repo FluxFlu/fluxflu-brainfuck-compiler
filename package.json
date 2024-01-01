@@ -1,6 +1,6 @@
 {
   "name": "@fluxflu/bc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The only brutally optimizing brainfuck compiler.",
   "author": "Missy \"FluxFlu\" (the God)",
   "keywords": [
