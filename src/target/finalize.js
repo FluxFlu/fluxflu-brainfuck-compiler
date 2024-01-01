@@ -4,8 +4,8 @@ const { getCompilerFlag } = require("../utils/compiler_flags");
 
 const binding = [
     null,
-    /* PLUS         */ value => (value > 1) ? `(*p)+=${value};` : "(*p)++;",
-    /* MINUS        */ value => (value > 1) ? `(*p)-=${value};` : "(*p)--;",
+    /* PLUS         */ (value, offset) => (value > 1) ? `p[${offset}]+=${value};` : `p[${offset}]++;`,
+    /* MINUS        */ (value, offset) => (value > 1) ? `p[${offset}]-=${value};` : `p[${offset}]--;`,
     /* LEFT         */ value => (value > 1) ? `if(p-${value}>tape)p-=${value};else p=tape;` : "if(p>tape)p--;",
     /* RIGHT        */ value => {
         return (
@@ -24,25 +24,25 @@ const binding = [
     },
     /* START_LOOP   */ () => "while(*p){",
     /* END_LOOP     */ () => "}",
-    /* INPUT        */ () => "(*p)=getchar();",
-    /* OUTPUT       */ () => "putchar(*p);",
+    /* INPUT        */ (value, offset) => `p[${offset}]=getchar();`,
+    /* OUTPUT       */ (value, offset) => `putchar(p[${offset}]);`,
     /* PRINT        */ value => `fputs("${value}",stdout);`,
-    /* SET          */ value => value ? `(*p)=${value};` : "(*p)=0;",
-    /* CREATE_STATE */ value => {
-        const tape = value.tape;
-        const keys = Object.keys(tape);
-        return (
-            // Set each part of the tape to expected values
-            keys.map(byte => `p[${byte}]=${tape[byte]};`).join("") +
-            // Set the pointer location
-            (value.set ?
-                "p=tape+" + value.ptr + ";"
-                :   (value.ptr ?
-                    "p+=" + value.ptr + ";"
-                    : "")
-            )
-        );
-    }
+    /* SET          */ (value, offset) => value ? `p[${offset}]=${value};` : `p[${offset}]=0;`,
+    // /* CREATE_STATE */ value => {
+    //     const tape = value.tape;
+    //     const keys = Object.keys(tape);
+    //     return (
+    //         // Set each part of the tape to expected values
+    //         keys.map(byte => `p[${byte}]=${tape[byte]};`).join("") +
+    //         // Set the pointer location
+    //         (value.set ?
+    //             "p=tape+" + value.ptr + ";"
+    //             :   (value.ptr ?
+    //                 "p+=" + value.ptr + ";"
+    //                 : "")
+    //         )
+    //     );
+    // }
 ];
 
 function finalize (file) {
@@ -57,7 +57,7 @@ function finalize (file) {
     }
     output += "char*p=tape;";
     for (let i = 0; i < file.length; i++) {
-        output += binding[file[i].instr](file[i].value, i);
+        output += binding[file[i].instr](file[i].value, file[i].offset);
     }
     return output + "return 0;}";
 }

@@ -2,7 +2,11 @@ const { PRINT } = require("../../../preparation/utils/instructions");
 const { UNKNOWN, pushResult } = require("../simulation_utils");
 
 function output(State) {
-    const { tape, ptr, result } = State;
+    const { tape, result } = State;
+    let ptr = State.ptr;
+    
+    if (ptr !== UNKNOWN)
+        ptr = ptr + State.token.offset;
 
     // If we don't know what the value to print is, then we must handle the print at runtime.
     if (ptr === UNKNOWN || tape[ptr] === UNKNOWN) {
@@ -18,7 +22,7 @@ function output(State) {
             .replace("\n", "\\n")
             .replace("\"", "\\\"")
             .replace("\0", "\\0");
-
+        
         // If there is already a print instruction, instead of creating a new one, we add to it.
         if (result.length && result[result.length - 1].instr == PRINT)
             result[result.length - 1].value += printString;

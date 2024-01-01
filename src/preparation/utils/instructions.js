@@ -10,6 +10,5 @@ module.exports = {
     OUTPUT:         8,
     
     PRINT:          9,
-    SET:            10,
-    CREATE_STATE:   11
+    SET:            10
 };

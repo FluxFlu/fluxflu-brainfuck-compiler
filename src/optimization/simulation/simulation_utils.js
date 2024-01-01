@@ -1,6 +1,5 @@
 const { logCompilerError } = require("../../error/compiler_error");
-const { CREATE_STATE } = require("../../preparation/utils/instructions");
-const { END_LOOP, RIGHT } = require("../../preparation/utils/instructions");
+const { END_LOOP, RIGHT, SET } = require("../../preparation/utils/instructions");
 
 const UNKNOWN = Symbol("UNKNOWN");
 
@@ -14,9 +13,15 @@ function createState(result, tape, positionCompromised, ptr) {
         console.trace();
         process.exit(1);
     }
-    const set = {};
-    tape.forEach((e, i) => { if (e !== undefined && e !== UNKNOWN) set[i] = e; });
-    result.push({ instr: CREATE_STATE, value: { tape: set, ptr, set: !positionCompromised } });
+    // const set = {};
+    // tape.forEach((e, i) => { if (e !== undefined && e !== UNKNOWN) set[i] = e; });
+    result.push({ instr: RIGHT, value: ptr });
+    tape.forEach((value, i) => {
+        if (value !== undefined && value !== UNKNOWN) {
+            result.push({ instr: SET, offset: i, value });
+        }
+    })
+    // result.push({ instr: CREATE_STATE, value: { tape: set, ptr, set: !positionCompromised } });
 }
 
 function pushResult(State) {
@@ -29,7 +34,7 @@ function pushResult(State) {
         if (loopsCompromised.at(-1) || !currentState || currentState.ptr == UNKNOWN) {
             currentState = { tape, ptr };
         }
-        createState(result, currentState.tape, loopsCompromised.at(-1) || positionCompromised, currentState.ptr);
+        createState(result, currentState.tape, loopsCompromised.at(-1) || positionCompromised, currentState.ptr + token.offset);
         State.tapeNotRaw = false;
     }
 

@@ -1,4 +1,4 @@
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, SET } = require("../preparation/utils/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, SET, PRINT } = require("../preparation/utils/instructions");
 const { endLoop } = require("./simulation/instructions/endLoop");
 const { left } = require("./simulation/instructions/left");
 const { minus } = require("./simulation/instructions/minus");
@@ -59,11 +59,15 @@ function simulate(file) {
                 // and the reason we set the current value to unknown is because it is determined at compile time by the user.
                 pushResult(State);
                 if (State.ptr !== UNKNOWN)
-                    tape[State.ptr] = UNKNOWN;
+                    tape[State.ptr + State.token.offset] = UNKNOWN;
                 break;
             }
             case OUTPUT: {
                 output(State);
+                break;
+            }
+            case PRINT: {
+                result.push(State.token);
                 break;
             }
             case SET: {
@@ -74,7 +78,7 @@ function simulate(file) {
                     break;
                 }
                 
-                tape[State.ptr] = State.token.value || 0;
+                tape[State.ptr + State.token.offset] = State.token.value || 0;
                 State.tapeNotRaw = true;
                 break;
             }
