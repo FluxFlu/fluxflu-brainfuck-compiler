@@ -1,14 +1,14 @@
 const { logCompilerError } = require("../../error/compiler_error");
 const { CREATE_STATE } = require("../../preparation/utils/instructions");
-// const { END_LOOP, RIGHT } = require("../../preparation/utils/instructions");
+const { END_LOOP, RIGHT } = require("../../preparation/utils/instructions");
 
 const UNKNOWN = Symbol("UNKNOWN");
 
 function createState(result, tape, positionCompromised, ptr) {
-    // if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0 && positionCompromised) {
-    //     result.push({ instr: RIGHT, value: ptr });
-    //     return;
-    // }
+    if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0 && positionCompromised) {
+        result.push({ instr: RIGHT, value: ptr });
+        return;
+    }
     if (ptr === UNKNOWN) {
         logCompilerError("generic", "POINTER UNKNOWN.");
         console.trace();
