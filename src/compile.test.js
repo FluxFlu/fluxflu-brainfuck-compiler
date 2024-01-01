@@ -34,7 +34,6 @@ function removeDelimiter(str) {
 }
 
 test("Sample Programs With Simulation", () => {
-
     mockflags.set("full-optimize", true);
 
     fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
@@ -43,7 +42,6 @@ test("Sample Programs With Simulation", () => {
 });
 
 test("Sample Programs Without Simulation", () => {
-
     mockflags.set("full-optimize", false);
 
     fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
