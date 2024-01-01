@@ -1,5 +1,6 @@
 const { UNKNOWN, pushResult } = require("../simulation_utils");
 
+let h = 0;
 function plus(State) {
     const { tape, ptr, loopsCompromised, positionCompromised, token } = State;
 
@@ -19,6 +20,7 @@ function plus(State) {
         pushResult(State);
         return;
     }
+
     // If the current place is known, however, we run the add operation at compile time instead.
     tape[ptr] = (tape[ptr] + (token.value || 1)) % 256;
 

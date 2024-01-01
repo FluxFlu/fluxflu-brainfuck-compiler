@@ -4,8 +4,8 @@ const { getCompilerFlag } = require("../utils/compiler_flags");
 
 const binding = [
     null,
-    /* PLUS         */ value => (value > 1) ? `*p+=${value};` : "(*p)++;",
-    /* MINUS        */ value => (value > 1) ? `*p-=${value};` : "(*p)--;",
+    /* PLUS         */ value => (value > 1) ? `(*p)+=${value};` : "(*p)++;",
+    /* MINUS        */ value => (value > 1) ? `(*p)-=${value};` : "(*p)--;",
     /* LEFT         */ value => (value > 1) ? `if(p-${value}>tape)p-=${value};else p=tape;` : "if(p>tape)p--;",
     /* RIGHT        */ value => {
         return (
@@ -17,7 +17,7 @@ const binding = [
             +
             (
                 getCompilerFlag("final") ? "" :
-                    "\nif(p-tape>" + getCompilerFlag("tape-size") + "){fputs(\"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\", stdout);return 1;}"
+                    "if(p-tape>" + getCompilerFlag("tape-size") + "){fputs(\"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\", stdout);return 1;}"
             ) + 
             (getCompilerFlag("heap-memory") ? "while(p>size){size++;(*size)=0;}" : "")
         );
@@ -36,9 +36,9 @@ const binding = [
             keys.map(byte => `p[${byte}]=${tape[byte]};`).join("") +
             // Set the pointer location
             (value.set ?
-                "p=tape+" + value.ptr + ";\n"
+                "p=tape+" + value.ptr + ";"
                 :   (value.ptr ?
-                    "p+=" + value.ptr + ";\n"
+                    "p+=" + value.ptr + ";"
                     : "")
             )
         );
@@ -55,11 +55,11 @@ function finalize (file) {
     } else {
         output += "char tape[" + getCompilerFlag("tape-size") + "]={0};";
     }
-    output += "char*p=tape;"
+    output += "char*p=tape;";
     for (let i = 0; i < file.length; i++) {
         output += binding[file[i].instr](file[i].value, i);
     }
-    return output + "\nreturn 0;\n}";
+    return output + "return 0;}";
 }
 
 module.exports = { finalize };

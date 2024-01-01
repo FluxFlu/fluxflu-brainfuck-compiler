@@ -21,8 +21,8 @@ function simulate(file) {
     const State = {
         file, tape, stateStack, loops, result, loopsCompromised,
         positionCompromised: false,
-        ptr: 0,
         tapeNotRaw: false,
+        ptr: 0,
         i: 0
     };
     for (State.i = 0; State.i < file.length; State.i++) {

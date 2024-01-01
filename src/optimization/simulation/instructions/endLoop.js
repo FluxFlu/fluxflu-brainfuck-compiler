@@ -13,7 +13,7 @@ function endLoop(State) {
     // 2. The position is not compromised. If this is the case, then the current value must simply be uninitialized,
     //     and can be freely initialized to 0.
 
-    if (loops.length == 0) {
+    if (loopsCompromised.length == 0) {
         logError("unbalanced_parenthesis", token, getCompilerFlag("filename"));
     }
 

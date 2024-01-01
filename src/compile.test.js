@@ -19,7 +19,7 @@ jest.mock("./utils/compiler_flags", () => {
         __esModule: true,
         ...originalModule,
         getCompilerFlag: (flag) => mockflags.get(flag),
-        defineRuntimeTypes: () => {},
+        defineRuntimeTypes: () => { },
     };
 });
 
@@ -33,9 +33,20 @@ function removeDelimiter(str) {
     return str.replaceAll("\n", "").replaceAll("\r", "");
 }
 
-fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
-    const fileName = capitalize(file.slice(0, -3));
-    test("Sample Program: " + fileName, () => {
-        expect(removeDelimiter(compile(fs.readFileSync(path.join(testDir, file))).toString())).toBe(removeDelimiter(fs.readFileSync(path.join(testDir, file.slice(0, -3) + ".c")).toString()));
+test("Sample Programs With Simulation", () => {
+
+    mockflags.set("full-optimize", true);
+
+    fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
+        expect(removeDelimiter(compile(fs.readFileSync(path.join(testDir, file))).toString())).toBe(removeDelimiter(fs.readFileSync(path.join(testDir, file.slice(0, -3) + "A.c")).toString()));
+    });
+});
+
+test("Sample Programs Without Simulation", () => {
+
+    mockflags.set("full-optimize", false);
+
+    fs.readdirSync(testDir).filter(e => e.slice(-3) == ".bf").forEach(file => {
+        expect(removeDelimiter(compile(fs.readFileSync(path.join(testDir, file))).toString())).toBe(removeDelimiter(fs.readFileSync(path.join(testDir, file.slice(0, -3) + "B.c")).toString()));
     });
 });
