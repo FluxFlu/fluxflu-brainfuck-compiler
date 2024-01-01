@@ -15,7 +15,7 @@
 <br><br>
 
 # CLI Installation
-Pre-built binaries for FBC can be downloaded at [the releases page](https://github.com/FluxFlu/fbc/releases/).
+Pre-built binaries for FBC can be downloaded at [the releases page](https://github.com/FluxFlu/fluxflu-brainfuck-compiler/releases/).
 
 It can also be installed using the NPM as follows.
 
@@ -39,4 +39,4 @@ $ fbc mandelbrot.bff --final
 
 # Licensing
 
-FBC is licensed under the [GPL-3.0](https://github.com/FluxFlu/fbc/blob/main/LICENSE). A copy is included with the compiler.
+FBC is licensed under the [GPL-3.0](https://github.com/FluxFlu/fluxflu-brainfuck-compiler/blob/main/LICENSE). A copy is included with the compiler.

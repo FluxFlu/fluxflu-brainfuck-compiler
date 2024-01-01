@@ -11,12 +11,12 @@
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/FluxFlu/fbc.git"
+    "url": "https://github.com/FluxFlu/fluxflu-brainfuck-compiler.git"
   },
   "bugs": {
-    "url": "https://github.com/FluxFlu/fbc/issues"
+    "url": "https://github.com/FluxFlu/fluxflu-brainfuck-compiler/issues"
   },
-  "homepage": "https://github.com/FluxFlu/fbc#readme",
+  "homepage": "https://github.com/FluxFlu/fluxflu-brainfuck-compiler#readme",
   "main": "./src/fbc.js",
   "bin": {
     "fbc": "./src/fbc.js"

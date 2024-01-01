@@ -9,7 +9,7 @@ const compilerErrors = {
     ],
 };
 
-const reportErrorLink = "https://github.com/FluxFlu/fbc/issues";
+const reportErrorLink = "https://github.com/FluxFlu/fluxflu-brainfuck-compiler/issues";
 
 function logCompilerError(error, originalThrow, ...args) {
     console.error("\x1b[1;31mCompilerError[" + error + "]: \x1b[0m" + compilerErrors[error].apply(null, args).join("\n\n") + "\n\n" + note + `Please report this error at ${reportErrorLink}`);
