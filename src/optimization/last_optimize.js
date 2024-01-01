@@ -1,4 +1,4 @@
-const { LEFT, RIGHT, END_LOOP, START_LOOP, INPUT, OUTPUT, PRINT, PLUS, MINUS, MULT_ASSIGN } = require("../preparation/utils/instructions");
+const { LEFT, RIGHT, END_LOOP, START_LOOP, INPUT, OUTPUT, PRINT, MINUS, MULT_ASSIGN } = require("../preparation/utils/instructions");
 
 function lastOptimize(file) {
     const result = [];

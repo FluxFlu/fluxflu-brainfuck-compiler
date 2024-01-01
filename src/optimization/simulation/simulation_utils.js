@@ -21,6 +21,7 @@ function createState(result, tape, ptr) {
     });
     if (ptr > 0)
         result.push({ instr: RIGHT, value: ptr });
+    console.log(result.at(-1));
 }
 
 function pushResult(State) {
@@ -32,11 +33,11 @@ function pushResult(State) {
         if (loopsCompromised.at(-1) || !currentState || currentState.ptr == UNKNOWN) {
             currentState = { tape, ptr };
         }
+        console.log(currentState);
         createState(result, currentState.tape, currentState.ptr);
         State.tapeNotRaw = false;
         State.ptr = 0;
-        tape.length = 1;
-        tape[0] = 0;
+        tape.length = 0;
     }
 
     // We add all of the items in the program that have currently been skipped over (due to loops).
