@@ -1,3 +1,4 @@
+const { PLUS, MINUS } = require("../preparation/utils/instructions");
 const { RESET, RED, BOLD_BLUE } = require("../utils/colors");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
@@ -28,6 +29,19 @@ const binding = [
     /* OUTPUT       */ (value, offset) => `putchar(p[${offset}]);`,
     /* PRINT        */ value => `fputs("${value}",stdout);`,
     /* SET          */ (value, offset) => value ? `p[${offset}]=${value};` : `p[${offset}]=0;`,
+    /* MULT_ASSIGN  */ value => {
+        const op = (value.instr == PLUS ? "+=" : (value.instr == MINUS ? "-=" : "="));
+        // console.log(`p[${offset || 0}] ${op} ${value.value}*p[0];`);
+        const offset = value.offset;
+        // console.log(offset);
+        if (!offset && (!value.value || value.value == 1) && op == "-=")
+            return `p[0] = 0;`;
+        // process.exit(1)
+        if (value.value > 1)
+            return `p[${value.offset}] ${op} ${value.value}*p[0]; // F`;
+        else
+            return `p[${value.offset}] ${op} p[0]; // E`;
+    }
     // /* CREATE_STATE */ value => {
     //     const tape = value.tape;
     //     const keys = Object.keys(tape);
@@ -57,7 +71,7 @@ function finalize (file) {
     }
     output += "char*p=tape;";
     for (let i = 0; i < file.length; i++) {
-        output += binding[file[i].instr](file[i].value, file[i].offset);
+        output += binding[file[i].instr](file[i].value, file[i].offset) + "\n";
     }
     return output + "return 0;}";
 }

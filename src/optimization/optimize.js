@@ -1,4 +1,4 @@
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, PRINT, SET } = require("../preparation/utils/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, PRINT, SET, OUTPUT } = require("../preparation/utils/instructions");
 
 // These operations need their values compressed. Eg, -1 => 255.
 const compressToBytes = new Map(
@@ -50,6 +50,10 @@ function optimize(file) {
                 repeatOptimizations = true;
                 continue;
             }
+
+            // Setting to zero after a loop is unneeded because it is already guaranteed to be at position zero.
+            if (i && file[i - 1].instr == END_LOOP && file[i].instr == SET && file[i].value == 0 && file[i].offset == 0)
+                continue;
 
             // When two nullable operations (second cancels first) are next to each other, skip the first operation.
             if (file.length > i + 1 && file[i].offset == file[i + 1].offset && nullable.get(file[i].instr) && nullable.get(file[i + 1].instr)) {

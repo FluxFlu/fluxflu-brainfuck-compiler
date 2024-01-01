@@ -5,8 +5,13 @@ function output(State) {
     const { tape, result } = State;
     let ptr = State.ptr;
     
-    if (ptr !== UNKNOWN)
+    if (ptr !== UNKNOWN) {
         ptr = ptr + State.token.offset;
+        while (ptr < 0) {
+            tape.unshift(undefined);
+            ptr++;
+        }
+    }
 
     // If we don't know what the value to print is, then we must handle the print at runtime.
     if (ptr === UNKNOWN || tape[ptr] === UNKNOWN) {

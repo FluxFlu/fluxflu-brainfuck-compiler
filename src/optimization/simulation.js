@@ -25,6 +25,7 @@ function simulate(file) {
         ptr: 0,
         i: 0
     };
+    
     for (State.i = 0; State.i < file.length; State.i++) {
         State.token = file[State.i];
 
@@ -58,8 +59,16 @@ function simulate(file) {
                 // Input can never be handled at compile time, which is why we must always push the input token,
                 // and the reason we set the current value to unknown is because it is determined at compile time by the user.
                 pushResult(State);
-                if (State.ptr !== UNKNOWN)
-                    tape[State.ptr + State.token.offset] = UNKNOWN;
+                if (State.ptr !== UNKNOWN) {
+
+                    let ptr = State.ptr + State.token.offset;
+                    while (ptr < 0) {
+                        tape.unshift(undefined);
+                        ptr++;
+                    }
+
+                    tape[ptr] = UNKNOWN;
+                }
                 break;
             }
             case OUTPUT: {
@@ -77,8 +86,14 @@ function simulate(file) {
                     pushResult(State);
                     break;
                 }
-                
-                tape[State.ptr + State.token.offset] = State.token.value || 0;
+
+                let ptr = State.ptr + State.token.offset;
+                while (ptr < 0) {
+                    tape.unshift(undefined);
+                    ptr++;
+                }
+
+                tape[ptr] = State.token.value || 0;
                 State.tapeNotRaw = true;
                 break;
             }

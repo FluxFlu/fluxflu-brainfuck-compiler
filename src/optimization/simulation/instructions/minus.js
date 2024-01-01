@@ -3,9 +3,14 @@ const { UNKNOWN, pushResult } = require("../simulation_utils");
 function minus(State) {
     const { tape, loopsCompromised, positionCompromised, token } = State;
     let ptr = State.ptr;
-
-    if (ptr !== UNKNOWN)
-        ptr = ptr + token.offset;
+    
+    if (ptr !== UNKNOWN) {
+        ptr = ptr + State.token.offset;
+        while (ptr < 0) {
+            tape.unshift(undefined);
+            ptr++;
+        }
+    }
 
     // If the current place is known but the current byte is undefined, then either one of two things must be true.
     //

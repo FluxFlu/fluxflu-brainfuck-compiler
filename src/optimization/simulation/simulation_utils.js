@@ -3,8 +3,8 @@ const { END_LOOP, RIGHT, SET } = require("../../preparation/utils/instructions")
 
 const UNKNOWN = Symbol("UNKNOWN");
 
-function createState(result, tape, positionCompromised, ptr) {
-    if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0 && positionCompromised) {
+function createState(result, tape, ptr) {
+    if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0) {
         result.push({ instr: RIGHT, value: ptr });
         return;
     }
@@ -13,20 +13,18 @@ function createState(result, tape, positionCompromised, ptr) {
         console.trace();
         process.exit(1);
     }
-    // const set = {};
-    // tape.forEach((e, i) => { if (e !== undefined && e !== UNKNOWN) set[i] = e; });
-    result.push({ instr: RIGHT, value: ptr });
+
     tape.forEach((value, i) => {
         if (value !== undefined && value !== UNKNOWN) {
             result.push({ instr: SET, offset: i, value });
         }
-    })
-    // result.push({ instr: CREATE_STATE, value: { tape: set, ptr, set: !positionCompromised } });
+    });
+    if (ptr > 0)
+        result.push({ instr: RIGHT, value: ptr });
 }
 
 function pushResult(State) {
-
-    const { file, tape, ptr, positionCompromised, loopsCompromised, stateStack, result, loops, token } = State;
+    const { file, tape, ptr, loopsCompromised, stateStack, result, loops, token } = State;
 
     // If there is real data in the tape, we add that data to the program.
     if (State.tapeNotRaw) {
@@ -34,8 +32,11 @@ function pushResult(State) {
         if (loopsCompromised.at(-1) || !currentState || currentState.ptr == UNKNOWN) {
             currentState = { tape, ptr };
         }
-        createState(result, currentState.tape, loopsCompromised.at(-1) || positionCompromised, currentState.ptr + token.offset);
+        createState(result, currentState.tape, currentState.ptr);
         State.tapeNotRaw = false;
+        State.ptr = 0;
+        tape.length = 1;
+        tape[0] = 0;
     }
 
     // We add all of the items in the program that have currently been skipped over (due to loops).

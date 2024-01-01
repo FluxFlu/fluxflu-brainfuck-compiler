@@ -35,7 +35,7 @@ function startLoop(State) {
             currentState = { tape, ptr };
         }
         if (State.tapeNotRaw)
-            createState(result, currentState.tape, loopsCompromised.at(-1) || positionCompromised, currentState.ptr);
+            createState(result, currentState.tape, currentState.ptr);
         loopsCompromised.push(true);
         State.positionCompromised = true;
         result.push(token);

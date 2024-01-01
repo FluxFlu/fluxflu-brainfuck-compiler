@@ -27,7 +27,7 @@ function endLoop(State) {
 
         if (State.tapeNotRaw) {
             const currentState = { tape, ptr };
-            createState(result, currentState.tape, true, currentState.ptr);
+            createState(result, currentState.tape, currentState.ptr);
             State.tapeNotRaw = false;
         }
 

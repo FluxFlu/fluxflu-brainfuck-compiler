@@ -9,6 +9,8 @@ module.exports = {
     INPUT:          7,
     OUTPUT:         8,
     
-    PRINT:          9,
-    SET:            10
+    PRINT:          9,   // Not part of original brainfuck
+    SET:            10,
+
+    MULT_ASSIGN:    11,  // Cannot be used in simulation
 };
