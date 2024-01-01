@@ -1,6 +1,5 @@
 const { UNKNOWN, pushResult } = require("../simulation_utils");
 
-let h = 0;
 function plus(State) {
     const { tape, ptr, loopsCompromised, positionCompromised, token } = State;
 

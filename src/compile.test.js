@@ -23,12 +23,6 @@ jest.mock("./utils/compiler_flags", () => {
     };
 });
 
-function capitalize(str) {
-    return str.split("_").map(e => {
-        return e[0].toUpperCase() + e.slice(1);
-    }).join(" ");
-}
-
 function removeDelimiter(str) {
     return str.replaceAll("\n", "").replaceAll("\r", "");
 }
