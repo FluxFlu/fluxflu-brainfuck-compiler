@@ -66,24 +66,7 @@ function finalize(file) {
         } else if (file[i].instr === SET && !hasMoved && file[i].value == 0) {
             continue;
         }
-
-        if (file[i].instr == SET && file[i].value === file[i + 1]?.value && file[i].offset === file[i + 1].offset - 1) {
-            const offset = file[i].offset;
-            const lastSetValue = file[i].value;
-            let numSameSet = 1;
-            for (let j = i + 1; true; j++) {
-                if (file[j].value == lastSetValue && file[j].offset === file[j - 1].offset + 1 && j + 1 < file.length) {
-                    numSameSet++;
-                } else if (numSameSet > 7) {
-                    output += `for (int g=${numSameSet};--g;) tape[g+${offset}]=${lastSetValue};`;
-                    i = j;
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
-        output += binding[file[i].instr](file[i].value, file[i].offset);
+        output += binding[file[i].instr](file[i].value, file[i].offset) + "\n";
     }
     return output + "return 0;}";
 }
