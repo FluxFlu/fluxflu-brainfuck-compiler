@@ -34,7 +34,7 @@ function lastOptimize(file) {
                 instrList.push(zeroMod);
                 for (let f = 0; f < instrList.length; f++) {
                     if (instrList[f]) {
-                        result.push({ instr: MULT_ASSIGN, value: instrList[f], offset: instrList[f] } );
+                        result.push({ instr: MULT_ASSIGN, value: instrList[f], offset: 0 } );
                     }
                 }
                 i = j;

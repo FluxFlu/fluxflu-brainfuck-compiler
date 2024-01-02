@@ -1,6 +1,6 @@
 const { LEFT, RIGHT, END_LOOP, START_LOOP } = require("../preparation/utils/instructions");
 
-function furtherOptimize(file) {
+function offsetOptimize(file) {
     let currentOffset = 0;
     const result = [];
     for (let i = 0; i < file.length; i++) {
@@ -12,6 +12,7 @@ function furtherOptimize(file) {
             currentOffset -= file[i].value || 1;
             continue;
         }
+
         file[i].offset += currentOffset;
         if (file[i].instr == END_LOOP || file[i].instr == START_LOOP) {
             if (currentOffset) {
@@ -28,4 +29,4 @@ function furtherOptimize(file) {
     return result;
 }
 
-module.exports = { furtherOptimize };
+module.exports = { offsetOptimize };

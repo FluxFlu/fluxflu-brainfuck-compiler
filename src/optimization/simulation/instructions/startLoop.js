@@ -6,9 +6,8 @@ const { UNKNOWN, createState } = require("../simulation_utils");
 function startLoop(State) {
     const { file, tape, ptr, zero, loopsCompromised, positionCompromised, loops, stateStack, result, token } = State;
 
-    if (!token.hasStateStack) {
-        token.hasStateStack = true;
-        stateStack.push({ tape: [...tape], ptr, zero });
+    if (stateStack.at(-1)?.token !== token) {
+        stateStack.push({ tape: [...tape], ptr, zero, token });
     }
 
     // If the current place is known but the current byte is undefined, then either one of two things must be true.

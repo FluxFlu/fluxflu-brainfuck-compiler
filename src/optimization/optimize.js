@@ -1,4 +1,4 @@
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, PRINT, SET } = require("../preparation/utils/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, PRINT, SET } = require("../preparation/utils/instructions");
 
 // These operations need their values compressed. Eg, -1 => 255.
 const compressToBytes = new Map(
@@ -21,7 +21,7 @@ const repeatable = new Map(
 // When two of these operations are next to each other, the second nullifies the first. Eg, "[-]++++[-]" can by optimized to "[-]".
 const nullable = new Map(
     [
-        SET, INPUT,
+        SET,
     ].map(e => [e, true])
 );
 

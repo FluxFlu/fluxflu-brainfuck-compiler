@@ -11,21 +11,6 @@ const { logCompilerError } = require("../error/compiler_error");
 const { logError } = require("../error/log_error");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
-function logInstruction(instr) {
-    return ({
-        1 : "PLUS",
-        2 : "MINUS",
-        3 : "LEFT",
-        4 : "RIGHT",
-        5 : "START_LOOP",
-        6 : "END_LOOP",
-        7 : "INPUT",
-        8 : "OUTPUT",
-        9 : "PRINT",
-        10: "SET",
-    }[instr]);
-}
-
 function simulate(file) {
     const tape = [];
     const stateStack = [];

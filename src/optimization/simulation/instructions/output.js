@@ -28,10 +28,12 @@ function output(State) {
 
     // If we don't know what the value to print is, then we must handle the print at runtime.
     if (ptr === UNKNOWN || tape[ptr] === UNKNOWN) {
+        if (token.print)
+            token.print.value = "";
         pushResult(State);
         return;
     } else {
-        // Otherwise, we can print in a more efficient method, as determined at compile time.
+        // Otherwise, we can print with a more efficient method, as determined at compile time.
 
         // We replace escape characters, as the program must compile to C.
         const printString = String.fromCharCode(tape[ptr])
@@ -40,12 +42,15 @@ function output(State) {
             .replace("\n", "\\n")
             .replace("\"", "\\\"")
             .replace("\0", "\\0");
-        
-        // If there is already a print instruction, instead of creating a new one, we add to it.
-        if (result.length && result[result.length - 1].instr == PRINT)
-            result[result.length - 1].value += printString;
-        else
-            result.push({ instr: PRINT, value: printString });
+
+        if (result.length && result.at(-1).instr == PRINT) {
+            result.at(-1).value += printString;
+            token.print = result.at(-1);
+        } else {
+            const printToken = { instr: PRINT, value: printString };
+            result.push(printToken);
+            token.print = printToken;
+        }
     }
 }
 

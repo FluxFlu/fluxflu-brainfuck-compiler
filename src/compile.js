@@ -6,8 +6,9 @@ const { simulate } = require("./optimization/simulation");
 const { tokenize } = require("./preparation/tokenize");
 const { getCompilerFlag } = require("./utils/compiler_flags");
 const { toPlaintext } = require("braincomp");
-const { furtherOptimize } = require("./optimization/further_optimize");
+const { offsetOptimize } = require("./optimization/offset_optimize");
 const { sort } = require("./optimization/sort");
+const { lastOptimize } = require("./optimization/last_optimize");
 
 function compile(file) {
     if (file.subarray(0, 4) == "BFF:") {
@@ -25,24 +26,25 @@ function compile(file) {
     while (oldLength > file.length) {
         oldLength = file.length;
         file = optimize(file);
-        file = furtherOptimize(file);
+        file = offsetOptimize(file);
         file = sort(file);
     }
     if (getCompilerFlag("full-optimize")) {
         file = simulate(file);
+
+        file = sort(file);
+        file = optimize(file);
+        file = offsetOptimize(file);
     }
-    // file = sort(file);
-    // file = optimize(file);
-    // file = furtherOptimize(file);
-    // file = lastOptimize(file);
-    
+    file = lastOptimize(file);
+
     oldLength = Infinity;
 
-    // while (oldLength > file.length) {
-    //     oldLength = file.length;
-    //     file = optimize(file);
-    //     file = furtherOptimize(file);
-    // }
+    while (oldLength > file.length) {
+        oldLength = file.length;
+        file = optimize(file);
+        file = offsetOptimize(file);
+    }
 
     file = finalize(file);
     return file;

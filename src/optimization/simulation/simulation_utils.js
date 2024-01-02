@@ -1,5 +1,5 @@
 const { logCompilerError } = require("../../error/compiler_error");
-const { END_LOOP, RIGHT, SET } = require("../../preparation/utils/instructions");
+const { END_LOOP, RIGHT, SET, LEFT } = require("../../preparation/utils/instructions");
 
 const UNKNOWN = Symbol("UNKNOWN");
 
@@ -53,6 +53,8 @@ function pushResult(State) {
     if (len-- && !loopsCompromised[len]) {
         loopsCompromised[len] = true;
         for (let j = loops[0]; j < State.i; j++) {
+            if (file[j].print)
+                file[j].print.value = "";
             result.push(file[j]);
         }
     }

@@ -2,8 +2,7 @@
     "env": {
         "browser": true,
         "commonjs": true,
-        "es2021": true,
-        "jest": true
+        "es2021": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
@@ -24,6 +23,9 @@
         "quotes": [
             "error",
             "double"
+        ],
+        "no-constant-condition": [
+            "off"
         ],
         "no-case-declarations": [
             "off"

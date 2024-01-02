@@ -1,5 +1,7 @@
 temp.*
-test.*
+./test.*
+test/test_programs/*.c
+test/test_programs/*.exe
 node_modules
 build
 package-lock.json
