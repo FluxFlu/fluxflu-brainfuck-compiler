@@ -9,6 +9,8 @@ function plus(State) {
         while (ptr < 0) {
             tape.unshift(undefined);
             ptr++;
+            State.ptr++;
+            State.zero++;
         }
     }
 

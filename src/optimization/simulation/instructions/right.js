@@ -10,7 +10,7 @@ function right(State) {
         return;
     }
 
-    if ((loopsCompromised.at(-1) || positionCompromised) && tape[ptr] == undefined || tape[ptr] == UNKNOWN) {
+    if ((loopsCompromised.at(-1) || positionCompromised) && tape[ptr + 1] == undefined || tape[ptr + 1] == UNKNOWN) {
         pushResult(State);
 
         // We move both at compile-time and runtime to maintain a sense of propriety.

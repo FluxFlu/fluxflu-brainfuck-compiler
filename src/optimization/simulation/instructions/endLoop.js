@@ -3,7 +3,7 @@ const { getCompilerFlag } = require("../../../utils/compiler_flags");
 const { UNKNOWN, createState } = require("../simulation_utils");
 
 function endLoop(State) {
-    const { tape, ptr, loopsCompromised, positionCompromised, loops, result, stateStack, token } = State;
+    const { tape, ptr, zero, loopsCompromised, positionCompromised, loops, result, stateStack, token } = State;
 
     // If the current place is known but the current byte is undefined, then either one of two things must be true.
     //
@@ -26,8 +26,8 @@ function endLoop(State) {
     if (loopsCompromised.pop()) {
 
         if (State.tapeNotRaw) {
-            const currentState = { tape, ptr };
-            createState(result, currentState.tape, currentState.ptr);
+            const currentState = { tape, ptr, zero };
+            createState(result, currentState.tape, currentState.ptr, currentState.zero);
             State.tapeNotRaw = false;
         }
 
@@ -37,6 +37,7 @@ function endLoop(State) {
         // We reset the tape, based on our knowledge that the current value is 0.
         //  (we know the current value is 0 because a loop has just ended)
         State.ptr = 0;
+        State.zero = 0;
         tape.length = 1;
         tape[0] = 0;
         State.positionCompromised = true;

@@ -32,9 +32,6 @@ function lastOptimize(file) {
             }
             if (zeroMod?.instr == MINUS && zeroMod.value == 1 && totalMovement === 0) {
                 instrList.push(zeroMod);
-                console.log("!!!");
-                console.log(instrList);
-                // process.exit(1);
                 for (let f = 0; f < instrList.length; f++) {
                     if (instrList[f]) {
                         result.push({ instr: MULT_ASSIGN, value: instrList[f], offset: instrList[f] } );

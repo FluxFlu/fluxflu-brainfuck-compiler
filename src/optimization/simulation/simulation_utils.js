@@ -3,9 +3,15 @@ const { END_LOOP, RIGHT, SET } = require("../../preparation/utils/instructions")
 
 const UNKNOWN = Symbol("UNKNOWN");
 
-function createState(result, tape, ptr) {
+function createState(result, tape, ptr, zero) {
+    let instr = RIGHT;
+    if (ptr < 0) {
+        instr = LEFT;
+        ptr *= -1;
+    }
+    ptr -= zero;
     if (result.at(-1)?.instr == END_LOOP && tape.filter(e => typeof e == "number").length == 1 && tape[0] == 0) {
-        result.push({ instr: RIGHT, value: ptr });
+        result.push({ instr, value: ptr });
         return;
     }
     if (ptr === UNKNOWN) {
@@ -16,27 +22,26 @@ function createState(result, tape, ptr) {
 
     tape.forEach((value, i) => {
         if (value !== undefined && value !== UNKNOWN) {
-            result.push({ instr: SET, offset: i, value });
+            result.push({ instr: SET, offset: i - zero, value });
         }
     });
     if (ptr > 0)
-        result.push({ instr: RIGHT, value: ptr });
-    console.log(result.at(-1));
+        result.push({ instr, value: ptr });
 }
 
 function pushResult(State) {
-    const { file, tape, ptr, loopsCompromised, stateStack, result, loops, token } = State;
+    const { file, tape, ptr, zero, loopsCompromised, stateStack, result, loops, token } = State;
 
     // If there is real data in the tape, we add that data to the program.
     if (State.tapeNotRaw) {
         let currentState = stateStack.at(-1);
         if (loopsCompromised.at(-1) || !currentState || currentState.ptr == UNKNOWN) {
-            currentState = { tape, ptr };
+            currentState = { tape, ptr, zero };
         }
-        console.log(currentState);
-        createState(result, currentState.tape, currentState.ptr);
+        createState(result, currentState.tape, currentState.ptr, currentState.zero);
         State.tapeNotRaw = false;
         State.ptr = 0;
+        State.zero = 0;
         tape.length = 0;
     }
 

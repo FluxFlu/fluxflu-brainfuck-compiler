@@ -29,7 +29,7 @@
     "package.json"
   ],
   "scripts": {
-    "test": "jest --colors",
+    "test": "node ./test/test.js",
     "lint": "npx eslint ./ --global \"__dirname,process\"",
     "build": "pkg ./src/fbc.js --out-path ./build -C=Brotli"
   },

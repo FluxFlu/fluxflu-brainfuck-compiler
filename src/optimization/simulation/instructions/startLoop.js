@@ -4,11 +4,11 @@ const { getCompilerFlag } = require("../../../utils/compiler_flags");
 const { UNKNOWN, createState } = require("../simulation_utils");
 
 function startLoop(State) {
-    const { file, tape, ptr, loopsCompromised, positionCompromised, loops, stateStack, result, token } = State;
+    const { file, tape, ptr, zero, loopsCompromised, positionCompromised, loops, stateStack, result, token } = State;
 
     if (!token.hasStateStack) {
         token.hasStateStack = true;
-        stateStack.push({ tape: [...tape], ptr });
+        stateStack.push({ tape: [...tape], ptr, zero });
     }
 
     // If the current place is known but the current byte is undefined, then either one of two things must be true.
@@ -32,10 +32,11 @@ function startLoop(State) {
     if (ptr === UNKNOWN || tape[ptr] === UNKNOWN || positionCompromised) {
         let currentState = stateStack.at(-1);
         if (!currentState || currentState.ptr == UNKNOWN) {
-            currentState = { tape, ptr };
+            currentState = { tape, ptr, zero };
         }
-        if (State.tapeNotRaw)
-            createState(result, currentState.tape, currentState.ptr);
+        if (State.tapeNotRaw) {
+            createState(result, currentState.tape, currentState.ptr, currentState.zero);
+        }
         loopsCompromised.push(true);
         State.positionCompromised = true;
         result.push(token);
