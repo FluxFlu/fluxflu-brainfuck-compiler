@@ -1,4 +1,4 @@
-const { LEFT, RIGHT, END_LOOP, START_LOOP } = require("../preparation/utils/instructions");
+const { LEFT, RIGHT, END_LOOP, START_LOOP } = require("../parse/types/instructions");
 
 function offsetOptimize(file) {
     let currentOffset = 0;

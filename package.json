@@ -1,8 +1,8 @@
 {
   "name": "@fluxflu/bc",
-  "version": "1.3.1",
-  "description": "The only brutally optimizing brainfuck compiler.",
-  "author": "Missy \"FluxFlu\" (the God)",
+  "version": "2.0.0",
+  "description": "The fastest optimizing brainfuck compiler.",
+  "author": "Ashley Chekhov",
   "keywords": [
     "compiler",
     "brainfuck",
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/FluxFlu/fluxflu-brainfuck-compiler#readme",
   "main": "./src/fbc.js",
   "bin": {
-    "fbc": "./src/fbc.js"
+    "fbc": "./build/fbc.js"
   },
   "files": [
     "./src/**",
@@ -31,12 +31,9 @@
   "scripts": {
     "test": "node ./test/test.js",
     "lint": "npx eslint ./ --global \"__dirname,process\"",
-    "build": "pkg ./src/fbc.js --out-path ./build -C=Brotli"
+    "build": "pkg ./build/fbc.js --out-path ./build -C=Brotli"
   },
   "devDependencies": {
     "eslint": "^8.56.0"
-  },
-  "dependencies": {
-    "braincomp": "^1.2.1"
   }
 }

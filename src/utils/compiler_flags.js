@@ -5,7 +5,6 @@ const shorthand = new Map([
 ]);
 
 const flags = new Map([
-    ["full-optimize", false],
     ["heap-memory", false],
     ["final", false],
     ["output", ""],
@@ -23,6 +22,11 @@ const flagConsumes = new Map([
 
 const wasSpecified = new Map();
 
+let filename;
+const getFilename = () => filename;
+
+const getCompilerFlag = flag => flags.get(flag);
+
 function handleArguments(args) {
     if (args.includes("--help") || args.includes("-h")) {
         console.log(require("./help"));
@@ -31,7 +35,6 @@ function handleArguments(args) {
 
     args.shift();
     args.shift();
-    let filename;
     let argument;
     while (argument = args.shift()?.toLowerCase()) {
 
@@ -110,6 +113,4 @@ function handleArguments(args) {
     return filename;
 }
 
-const getCompilerFlag = flag => flags.get(flag);
-
-module.exports = { handleArguments, getCompilerFlag };
+module.exports = { handleArguments, getFilename, getCompilerFlag };

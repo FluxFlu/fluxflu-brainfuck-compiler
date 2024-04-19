@@ -1,4 +1,4 @@
-const { PLUS, SET, MINUS } = require("../preparation/utils/instructions");
+const { PLUS, SET, MINUS } = require("../parse/types/instructions");
 
 const sortables = new Map([
     PLUS, MINUS, SET

@@ -1,53 +1,38 @@
-
-const { createIntermediary } = require("./preparation/create_intermediary");
-const { finalize } = require("./target/finalize");
+const { emit } = require("./target/emit");
 const { optimize } = require("./optimization/optimize");
-const { simulate } = require("./optimization/simulation");
-const { tokenize } = require("./preparation/tokenize");
-const { getCompilerFlag } = require("./utils/compiler_flags");
-const { toPlaintext } = require("braincomp");
+const { tokenize } = require("./parse/tokenize");
 const { offsetOptimize } = require("./optimization/offset_optimize");
 const { sort } = require("./optimization/sort");
 const { lastOptimize } = require("./optimization/last_optimize");
+const { collapseLoops } = require("./parse/collapse_loops");
+const { tokenCleanup } = require("./parse/token_cleanup");
 
 function compile(file) {
-    if (file.subarray(0, 4) == "BFF:") {
-        file = toPlaintext(file);
-    } else {
-        file = file.toString();
-    }
+    file = file.toString();
     file = tokenize(file);
-    file = createIntermediary(file);
+    file = tokenCleanup(file);
+    file = collapseLoops(file);
+    console.log(file.map(e => e.toString()));
 
-    file.forEach(e => { if (!e.offset) e.offset = 0; });
+    // let oldLength = Infinity;
 
-    let oldLength = Infinity;
+    // while (oldLength > file.length) {
+    //     oldLength = file.length;
+    //     file = optimize(file);
+    //     file = offsetOptimize(file);
+    //     file = sort(file);
+    // }
+    // file = lastOptimize(file);
 
-    while (oldLength > file.length) {
-        oldLength = file.length;
-        file = optimize(file);
-        file = offsetOptimize(file);
-        file = sort(file);
-    }
-    if (getCompilerFlag("full-optimize")) {
-        file = simulate(file);
+    // oldLength = Infinity;
 
-        file = sort(file);
-        file = optimize(file);
-        file = offsetOptimize(file);
-    }
-    file = lastOptimize(file);
+    // while (oldLength > file.length) {
+    //     oldLength = file.length;
+    //     file = optimize(file);
+    //     file = offsetOptimize(file);
+    // }
 
-    oldLength = Infinity;
-
-    while (oldLength > file.length) {
-        oldLength = file.length;
-        file = optimize(file);
-        file = offsetOptimize(file);
-    }
-
-    file = finalize(file);
-    return file;
+    return emit(file);
 }
 
 module.exports = { compile };

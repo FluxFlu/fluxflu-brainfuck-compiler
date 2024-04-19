@@ -1,0 +1,10 @@
+function compilerError(error, ...args) {
+    if (error.at(-1) != ".") {
+        console.error("Internal Compiler Error: Compiler errors must end with a '.'\n");
+    }
+    console.error("\x1b[1;31mInternal Compiler Error: \x1b[0m" + error, ...args);
+    console.trace();
+    process.exit(1);
+}
+
+module.exports = { compilerError };

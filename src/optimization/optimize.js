@@ -1,4 +1,4 @@
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, PRINT, SET } = require("../preparation/utils/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, PRINT, SET } = require("../parse/types/instructions");
 
 // These operations need their values compressed. Eg, -1 => 255.
 const compressToBytes = new Map(

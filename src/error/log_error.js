@@ -1,10 +1,10 @@
-const { logCompilerError } = require("./compiler_error");
+const { logCompilerError, compilerError } = require("./internal_compiler_error");
 const { RESET, BOLD_RED } = require("../utils/colors");
 const { help } = require("./format");
 
 const errors = {
-    "unbalanced_parenthesis": (x, filename) => [
-        "Unbalanced Parenthesis at " + filename +
+    "unbalanced_braces": (x, filename) => [
+        "Unbalanced Braces at " + filename +
         (x.line === null ? "" :
             (":" + (x.line + 1) + ":" + (x.char + 1))
         )
@@ -44,7 +44,7 @@ const errors = {
 
 function logError(error, ...args) {
     if (!errors[error]) {
-        logCompilerError("invalid_error", null, error);
+        compilerError("Invalid Error [%s].", error);
         return;
     }
     const errorText = errors[error].apply(null, args);

@@ -1,4 +1,4 @@
-const { LEFT, RIGHT, END_LOOP, START_LOOP, INPUT, OUTPUT, PRINT, MINUS, MULT_ASSIGN } = require("../preparation/utils/instructions");
+const { LEFT, RIGHT, END_LOOP, START_LOOP, INPUT, OUTPUT, PRINT, MINUS, MULT_ASSIGN } = require("../parse/types/instructions");
 
 function lastOptimize(file) {
     const result = [];
@@ -25,10 +25,11 @@ function lastOptimize(file) {
                     totalMovement -= file[j].value;
                     continue;
                 }
-                if (file[j].offset === 0)
+                if (file[j].offset === 0) {
                     zeroMod = file[j];
-                else
+                } else {
                     instrList.push(file[j]);
+                }
             }
             if (zeroMod?.instr == MINUS && zeroMod.value == 1 && totalMovement === 0) {
                 instrList.push(zeroMod);
