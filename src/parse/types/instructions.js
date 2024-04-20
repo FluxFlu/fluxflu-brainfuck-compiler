@@ -7,6 +7,7 @@ const instructions = {
         rules    : new RuleSet(
             Rules.Repeatable,
             Rules.CompressToBytes,
+            Rules.OffsetSortable,
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.MINUS)
@@ -17,6 +18,7 @@ const instructions = {
         rules    : new RuleSet(
             Rules.Repeatable,
             Rules.CompressToBytes,
+            Rules.OffsetSortable,
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.PLUS)
@@ -79,10 +81,28 @@ const instructions = {
         rules    : new RuleSet(
             Rules.CompressToBytes,
             Rules.Nullable,
+            Rules.OffsetSortable,
         ),
         relations: () => new RelationSet(),
     },
-    MULT_ASSIGN: {
+
+    RELATIVE_MULT_PLUS: {
+        type     : "Instruction",
+        rules    : new RuleSet(),
+        relations: () => new RelationSet(),
+    },
+    RELATIVE_MULT_MINUS: {
+        type     : "Instruction",
+        rules    : new RuleSet(),
+        relations: () => new RelationSet(),
+    },
+    RELATIVE_SET: {
+        type     : "Instruction",
+        rules    : new RuleSet(),
+        relations: () => new RelationSet(),
+    },
+
+    END: {
         type     : "Instruction",
         rules    : new RuleSet(),
         relations: () => new RelationSet(),

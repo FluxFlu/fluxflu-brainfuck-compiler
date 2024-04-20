@@ -15,7 +15,7 @@ function tokenCleanup(tokens) {
 
             // Turn instances of "[-]" into a set operation.
             if (tokens[i].instr == START_LOOP && tokens.length > i + 2 && (tokens[i + 1].instr == MINUS || tokens[i + 1].instr == PLUS) && tokens[i + 2].instr == END_LOOP) {
-                result.push(new Instruction(SET, 0, 0, tokens[i].line, tokens[i].char));
+                result.push(new Instruction(SET, new Value(0, []), 0, tokens[i].line, tokens[i].char));
                 i += 2;
                 repeatOptimizations = true;
                 continue;

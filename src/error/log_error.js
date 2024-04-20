@@ -1,4 +1,4 @@
-const { logCompilerError, compilerError } = require("./internal_compiler_error");
+const { compilerError } = require("./internal_compiler_error");
 const { RESET, BOLD_RED } = require("../utils/colors");
 const { help } = require("./format");
 

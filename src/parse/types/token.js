@@ -32,7 +32,10 @@ class Instruction extends Token {
         this.offset = offset;
     }
     toString() {
-        return `${this.instr.toString()}[${this.offset.toString()}](${this.value.toString()})`;
+        return `${this.instr.toString()}[${this.offset.toString()}](${this.value.emit("&")})`;
+    }
+    instrSize() {
+        return 1;
     }
 }
 
@@ -48,6 +51,12 @@ class Container extends Token {
     }
     toString() {
         return `${this.instr.toString()}[${this.offset.toString()}]<${this.contents.map(e => e.toString()).join(", ")}>`;
+    }
+    instrSize() {
+        return this.contents.length + 1;
+    }
+    pass (fn) {
+        this.contents = fn(this.contents);
     }
 }
 

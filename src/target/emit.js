@@ -1,25 +1,23 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, PRINT, MULT_ASSIGN } = require("../parse/types/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, PRINT, RELATIVE_MULT_PLUS, RELATIVE_MULT_MINUS, END, RELATIVE_SET } = require("../parse/types/instructions");
 const { RESET, RED, BOLD_BLUE } = require("../utils/colors");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
 const binding = new Map([
     [ PLUS,
-        ({value, offset}) => (value > 1) ? `p[${offset}]+=${value};` : `p[${offset}]++;`
+        ({value, offset}) => `p[${offset}]+=${value.emit(null)};`
     ],
     [ MINUS,
-        ({value, offset}) => (value > 1) ? `p[${offset}]-=${value};` : `p[${offset}]--;`
+        ({value, offset}) => `p[${offset}]-=${value.emit(null)};`
     ],
     [ LEFT,
-        ({value}) => (value > 1) ? `if(p-${value}>tape)p-=${value};else p=tape;` : "if(p>tape)p--;"
+        ({value}) => `if(p-${value.emit(null)}>tape)p-=${value.emit(null)};else p=tape;`
     ],
     [ RIGHT,
         ({value}) => {
             return (
                 (
-                    (value > 1) ?
-                        `p+=${value};`
-                        : "p++;"
+                    `p+=${value.emit(null)};`
                 )
                 +
                 (
@@ -33,36 +31,39 @@ const binding = new Map([
     [ WHILE,
         ({contents}) => "while(*p){" + emitTokens(contents) + "}"
     ],
+    [ END,
+        () => ""
+    ],
     [ INPUT,
-        ({value, offset}) => `p[${offset}]=getchar();`
+        ({offset}) => `p[${offset}]=getchar();`
     ],
     [ OUTPUT,
-        ({value, offset}) => `putchar(p[${offset}]);`
+        ({offset}) => `putchar(p[${offset}]);`
     ],
     [ PRINT,
-        ({value}) => `puts("${value}");`
+        ({value}) => `puts("${value.emit(null)}");`
     ],
     [ SET,
-        ({value, offset}) => value ? `p[${offset}]=${value};` : `p[${offset}]=0;`
+        ({value, offset}) => value ? `p[${offset}]=${value.emit(null)};` : `p[${offset}]=0;`
     ],
-    [ MULT_ASSIGN,
-        ({value, offset}) => {
-
-            if (!value.offset && !offset && (!value.value || value.value == 1) && value.instr == MINUS)
-                return "p[0] = 0;";
-
-            if (value.instr == SET) {
-                return `if (p[${offset}]) p[${value.offset + offset}] = ${value.value};`;
-            }
-
-            const op = value.instr == PLUS ? "+=" : "-=";
-
-            if (value.value > 1)
-                return `p[${value.offset + offset}]${op}${value.value}*p[${offset}];`;
-            else
-                return `p[${value.offset + offset}]${op}p[${offset}];`;
+    [ RELATIVE_MULT_PLUS,
+        (token) => {
+            return `p[${token.offset}] += ${token.value.emit("*")};`;
         }
     ],
+    [ RELATIVE_MULT_MINUS,
+        (token) => {
+            if (token.offset == 0 && token.value.emit("*") == "(1 * p[0])") {
+                return "p[0] = 0;";
+            }
+            return `p[${token.offset}] -= ${token.value.emit("*")};`;
+        }
+    ],
+    [ RELATIVE_SET,
+        (token) => {
+            return `if (p[${token.value.runtime[0]}]) p[${token.offset}] = ${token.value.constant.emit()};`;
+        }
+    ]
 ]);
 
 
@@ -80,7 +81,7 @@ function emitTokens(tokens) {
             compilerError("Invalid instruction [%s].", tokens[i].toString());
         }
         return binding.get(tokens[i].instr)(tokens[i]);
-    }).join("\n")
+    }).join("\n");
 }
 
 function emit(tokens) {
