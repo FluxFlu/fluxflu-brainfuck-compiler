@@ -1,6 +1,6 @@
-const { Instruction } = require("./types/token");
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, DEBUG } = require("./types/instructions");
-const { Value } = require("./types/value");
+const { Instruction } = require("../types/token");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, DEBUG } = require("../types/instructions");
+const { Value, Constant } = require("../types/value");
 
 const operators = new Map([
     ["+", PLUS],
@@ -36,7 +36,7 @@ function tokenize(file) {
             continue;
         }
 
-        tokens.push(new Instruction(operators.get(file[i]), new Value(1, []), 0, line, char));
+        tokens.push(new Instruction(operators.get(file[i]), new Value(new Constant(1n)), 0n, line, char));
         char++;
     }
     return tokens;

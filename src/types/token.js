@@ -1,10 +1,13 @@
-const { compilerError } = require("../../error/internal_compiler_error");
+const { compilerError } = require("../error/internal_compiler_error");
 const { Value } = require("./value");
 
 
 class Token {
     constructor(instr, offset, line, char) {
         this.instr = instr;
+        if (typeof offset != "bigint") {
+            compilerError("Invalid offset [%o]. Must use type `bigint`.", offset);
+        }
         this.offset = offset;
         this.line = line;
         this.char = char;
@@ -13,7 +16,7 @@ class Token {
         if (rule._tag == "Rule") {
             return this.instr.rules.has(rule);
         } else if (rule._tag == "Relation") {
-            return this.instr.relations.has(rule);
+            return this.instr.relations.get(rule);
         }
     }
 }
@@ -29,13 +32,16 @@ class Instruction extends Token {
             compilerError("Invalid value [%o].", value);
         }
         this.value = value;
+        if (!(typeof offset == "bigint")) {
+            compilerError("Invalid offset [%o].", offset);
+        }
         this.offset = offset;
     }
     toString() {
         return `${this.instr.toString()}[${this.offset.toString()}](${this.value.emit("&")})`;
     }
     instrSize() {
-        return 1;
+        return 1n;
     }
 }
 
@@ -53,7 +59,7 @@ class Container extends Token {
         return `${this.instr.toString()}[${this.offset.toString()}]<${this.contents.map(e => e.toString()).join(", ")}>`;
     }
     instrSize() {
-        return this.contents.length + 1;
+        return this.contents.reduce((a, b) => a + b.instrSize(), 0n) + 1n;
     }
     pass (fn) {
         this.contents = fn(this.contents);

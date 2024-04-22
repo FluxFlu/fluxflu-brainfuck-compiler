@@ -1,8 +1,8 @@
 const { logError } = require("../error/log_error");
 const { getFilename } = require("../utils/compiler_flags");
-const { START_LOOP, END_LOOP, WHILE, END } = require("./types/instructions");
-const { Container, Instruction } = require("./types/token");
-const { Value } = require("./types/value");
+const { START_LOOP, END_LOOP, WHILE, END } = require("../types/instructions");
+const { Container, Instruction } = require("../types/token");
+const { Value, Constant } = require("../types/value");
 
 
 function collapseLoops(tokens) {
@@ -31,7 +31,7 @@ function collapseLoops(tokens) {
                 loopContents.push(tokens[i]);
                 i++;
             }
-            out.push(new Container(WHILE, collapseLoops(loopContents.concat([new Instruction(END, new Value(Infinity, []), 0, loopEnd.line, loopEnd.char)])), 0, loopStart.line, loopStart.char));
+            out.push(new Container(WHILE, collapseLoops(loopContents.concat([new Instruction(END, new Value(new Constant(null)), 0n, loopEnd.line, loopEnd.char)])), 0n, loopStart.line, loopStart.char));
         } else {
             out.push(tokens[i]);
         }

@@ -1,9 +1,15 @@
-const { compilerError } = require("../../error/internal_compiler_error");
+const { compilerError } = require("../error/internal_compiler_error");
 
 // The right side of this object represents the number of arguments.
 const Relations = {
     // These instructions, when next to each other, cancel each other out. Eg, "++++---" can be optimized to "+".
-    Opposites: 1
+    Opposites: 1,
+    
+    // This instruction adds to the argument when placed directly after.
+    // E.G.
+    // E :: Attachment<T>(T, (a, b) => a + b)
+    // "T(3), E(2)" == "T(5)"
+    Attachment: 1,
 };
 
 Object.keys(Relations).forEach((key, index) => {
@@ -12,12 +18,18 @@ Object.keys(Relations).forEach((key, index) => {
         if (tokens.length !== value) {
             compilerError("Invalid use of relation [%s]. Used [%o] arguments, when the proper number is [%o].", key, tokens.length, value);
         } else {
-            return {
+            const relation = {
                 _tag: "Relation",
                 value: index + 1,
                 tokens,
-                toString: () => key
+                toString: () => key,
+                to: (data) => {
+                    relation.data = data;
+                    return relation;
+                },
+                get: () => relation.data
             };
+            return relation;
         }
     };
 });
@@ -35,7 +47,13 @@ class RelationSet {
         if (relation._tag != "Relation") {
             compilerError("Invalid relation [%o].", relation);
         }
-        return this.relations.some(e => e.value == relation.value && e.tokens.every(thisToken => relation.tokens.some(thatToken => thisToken.value == thatToken.value)));
+        return this.relations.some(e => e.value == relation.value && e.tokens.every((thisToken, index) => relation.tokens[index].instr.value == thisToken.value));
+    }
+    get(relation) {
+        if (relation._tag != "Relation") {
+            compilerError("Invalid relation [%o].", relation);
+        }
+        return this.relations.find(e => e.value == relation.value && e.tokens.every((thisToken, index) => relation.tokens[index].instr.value == thisToken.value));
     }
 }
 

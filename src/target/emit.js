@@ -1,5 +1,6 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, PRINT, RELATIVE_MULT_PLUS, RELATIVE_MULT_MINUS, END, RELATIVE_SET } = require("../parse/types/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, PRINT, RELATIVE_PLUS, RELATIVE_MINUS, END, CHECK_SET, RELATIVE_SET, IF } = require("../types/instructions");
+const { Constant, Register } = require("../types/value");
 const { RESET, RED, BOLD_BLUE } = require("../utils/colors");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
@@ -28,12 +29,6 @@ const binding = new Map([
             );
         },
     ],
-    [ WHILE,
-        ({contents}) => "while(*p){" + emitTokens(contents) + "}"
-    ],
-    [ END,
-        () => ""
-    ],
     [ INPUT,
         ({offset}) => `p[${offset}]=getchar();`
     ],
@@ -46,24 +41,73 @@ const binding = new Map([
     [ SET,
         ({value, offset}) => value ? `p[${offset}]=${value.emit(null)};` : `p[${offset}]=0;`
     ],
-    [ RELATIVE_MULT_PLUS,
+    [ RELATIVE_PLUS,
         (token) => {
-            return `p[${token.offset}] += ${token.value.emit("*")};`;
+            token.value.forceMatch(Constant, Constant, Register);
+            const add = token.value.contents[0].emit();
+            const mult = token.value.contents[1].emit();
+            const value = `p[${token.value.contents[2].emit()}];`;
+            
+            let base = `p[${token.offset}] += `;
+            if (add != "0") {
+                base += `${add} + `;
+            }
+            if (mult != "1") {
+                base += `${mult} * `;
+            }
+            return base + value;
         }
     ],
-    [ RELATIVE_MULT_MINUS,
+    [ RELATIVE_MINUS,
         (token) => {
-            if (token.offset == 0 && token.value.emit("*") == "(1 * p[0])") {
-                return "p[0] = 0;";
+            token.value.forceMatch(Constant, Constant, Register);
+            const add = token.value.contents[0].emit();
+            const mult = token.value.contents[1].emit();
+            const value = `p[${token.value.contents[2].emit()}];`;
+            
+            let base = `p[${token.offset}] -= `;
+            if (add != "0") {
+                base += `${add} + `;
             }
-            return `p[${token.offset}] -= ${token.value.emit("*")};`;
+            if (mult != "1") {
+                base += `${mult} * `;
+            }
+            return base + value;
         }
     ],
     [ RELATIVE_SET,
         (token) => {
-            return `if (p[${token.value.runtime[0]}]) p[${token.offset}] = ${token.value.constant.emit()};`;
+            token.value.forceMatch(Constant, Constant, Register);
+            const add = token.value.contents[0].emit();
+            const mult = token.value.contents[1].emit();
+            const value = `p[${token.value.contents[2].emit()}];`;
+            
+            let base = `p[${token.offset}] = `;
+            if (add != "0") {
+                base += `${add} + `;
+            }
+            if (mult != "1") {
+                base += `${mult} * `;
+            }
+            return base + value;
         }
-    ]
+    ],
+    [ CHECK_SET,
+        (token) => {
+            token.value.forceMatch(Constant, Register);
+            return `if (p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[0].emit()};`;
+        }
+    ],
+    [ END,
+        () => ""
+    ],
+    [ WHILE,
+        ({contents}) => "while(*p){" + emitTokens(contents) + "}"
+    ],
+    [
+        IF,
+        ({contents}) => "if(*p){" + emitTokens(contents) + "}"
+    ],
 ]);
 
 
@@ -74,7 +118,7 @@ function emitTokens(tokens) {
     return tokens.map((e, i) => {
         if (tokens[i].instr !== SET && tokens[i].instr !== PRINT) {
             hasMoved = true;
-        } else if (tokens[i].instr === SET && !hasMoved && tokens[i].value == 0) {
+        } else if (tokens[i].instr === SET && !hasMoved && tokens[i].value.constant() == 0n) {
             return;
         }
         if (!binding.has(tokens[i].instr)) {

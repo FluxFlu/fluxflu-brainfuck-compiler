@@ -1,40 +1,40 @@
-const { LEFT, RIGHT, WHILE, END } = require("../parse/types/instructions");
-const { Instruction } = require("./types/token");
-const { Value } = require("./types/value");
+const { LEFT, RIGHT } = require("../types/instructions");
+const { Rules } = require("../types/rules");
+const { Instruction, Container } = require("../types/token");
+const { Value, Constant, Register } = require("../types/value");
 
 function calculateOffsets(file) {
-    let currentOffset = 0;
+    let currentOffset = 0n;
     const result = [];
     for (let i = 0; i < file.length; i++) {
         if (file[i].instr == RIGHT) {
-            if (file[i].value.runtime.length != 0) {
-                return file;
-            }
-            currentOffset += file[i].value.constant;
+            currentOffset += file[i].value.constant();
             continue;
         }
         if (file[i].instr == LEFT) {
-            if (file[i].value.runtime.length != 0) {
-                return file;
-            }
-            currentOffset -= file[i].value.constant;
+            currentOffset -= file[i].value.constant();
             continue;
         }
 
-        file[i].offset += currentOffset;
-        if (file[i].instr == WHILE || file[i].instr == END) {
+        if (file[i].is(Rules.InterruptOffset)) {
             if (currentOffset) {
-                if (currentOffset > 0) {
-                    result.push(new Instruction(RIGHT, new Value(currentOffset, []), 0, null, null));
-                } else if (currentOffset < 0) {
-                    result.push(new Instruction(LEFT, new Value(-currentOffset, []), 0, null, null));
+                if (currentOffset > 0n) {
+                    result.push(new Instruction(RIGHT, new Value(new Constant(currentOffset)), 0n, null, null));
+                } else if (currentOffset < 0n) {
+                    result.push(new Instruction(LEFT, new Value(new Constant(-currentOffset)), 0n, null, null));
                 }
-                currentOffset = 0;
+                currentOffset = 0n;
             }
         }
-        if (file[i].instr == WHILE) {
+        if (file[i] instanceof Container) {
             file[i].pass(calculateOffsets);
         }
+        
+        file[i]?.value?.contents?.filter(e => e instanceof Register)?.forEach(e => {
+            e.data += currentOffset;
+        });
+        file[i].offset += currentOffset;
+
         result.push(file[i]);
     }
     return result;
