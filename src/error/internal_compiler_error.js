@@ -7,4 +7,10 @@ function compilerError(error, ...args) {
     process.exit(1);
 }
 
-module.exports = { compilerError };
+function TODO(error) {
+    console.error("\x1b[1;31mTODO:\x1b[0m", error);
+    console.trace();
+    process.exit(1);
+}
+
+module.exports = { compilerError, TODO };

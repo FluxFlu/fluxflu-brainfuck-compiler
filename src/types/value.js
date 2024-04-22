@@ -100,4 +100,4 @@ class Register extends ValueType {
     }
 }
 
-module.exports = { Value, Constant, Register };
+module.exports = { Value, ValueType, Constant, Register };

@@ -6,6 +6,7 @@ const { optimize } = require("./parse/optimize");
 const { calculateOffsets } = require("./parse/calculate_offsets");
 const { multWhile } = require("./parse/mult_while");
 const { parseIf } = require("./parse/parse_if");
+const { analyze } = require("./flow_analysis/analyze");
 
 function compile(file) {
     file = file.toString();
@@ -20,6 +21,7 @@ function compile(file) {
         file = offsetSort(file);
         file = multWhile(file);
         file = parseIf(file);
+        // file = analyze(file);
     }
 
     return emit(file);

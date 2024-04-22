@@ -6,40 +6,40 @@ const { getCompilerFlag } = require("../utils/compiler_flags");
 
 const binding = new Map([
     [ PLUS,
-        ({value, offset}) => `p[${offset}]+=${value.emit(null)};`
+        ({value, offset}) => `\tp[${offset}] += ${value.emit(null)};`
     ],
     [ MINUS,
-        ({value, offset}) => `p[${offset}]-=${value.emit(null)};`
+        ({value, offset}) => `\tp[${offset}] -= ${value.emit(null)};`
     ],
     [ LEFT,
-        ({value}) => `if(p-${value.emit(null)}>tape)p-=${value.emit(null)};else p=tape;`
+        ({value}) => `\tif (p - ${value.emit(null)} > tape) p -= ${value.emit(null)}; else p = tape;`
     ],
     [ RIGHT,
         ({value}) => {
             return (
                 (
-                    `p+=${value.emit(null)};`
+                    `\tp += ${value.emit(null)};`
                 )
                 +
                 (
                     getCompilerFlag("final") ? "" :
-                        "if(p-tape>" + getCompilerFlag("tape-size") + "){puts(dbgString);return 1;}"
+                        " if (p - tape > " + getCompilerFlag("tape-size") + ") {puts(dbgString); return 1;}"
                 ) +
-                (getCompilerFlag("heap-memory") ? "while(p>size){size++;(*size)=0;}" : "")
+                (getCompilerFlag("heap-memory") ? " while (p > size) {size++; (*size) = 0;}" : "")
             );
         },
     ],
     [ INPUT,
-        ({offset}) => `p[${offset}]=getchar();`
+        ({offset}) => `\tp[${offset}] = getchar();`
     ],
     [ OUTPUT,
-        ({offset}) => `putchar(p[${offset}]);`
+        ({offset}) => `\tputchar(p[${offset}]);`
     ],
     [ PRINT,
-        ({value}) => `puts("${value.emit(null)}");`
+        ({value}) => `\tputs("${value.emit(null)}");`
     ],
     [ SET,
-        ({value, offset}) => value ? `p[${offset}]=${value.emit(null)};` : `p[${offset}]=0;`
+        ({value, offset}) => value ? `\tp[${offset}] = ${value.emit(null)};` : `\tp[${offset}] = 0;`
     ],
     [ RELATIVE_PLUS,
         (token) => {
@@ -55,7 +55,7 @@ const binding = new Map([
             if (mult != "1") {
                 base += `${mult} * `;
             }
-            return base + value;
+            return "\t" + base + value;
         }
     ],
     [ RELATIVE_MINUS,
@@ -72,7 +72,7 @@ const binding = new Map([
             if (mult != "1") {
                 base += `${mult} * `;
             }
-            return base + value;
+            return "\t" + base + value;
         }
     ],
     [ RELATIVE_SET,
@@ -89,24 +89,24 @@ const binding = new Map([
             if (mult != "1") {
                 base += `${mult} * `;
             }
-            return base + value;
+            return "\t" + base + value;
         }
     ],
     [ CHECK_SET,
         (token) => {
             token.value.forceMatch(Constant, Register);
-            return `if (p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[0].emit()};`;
+            return `\tif (p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[0].emit()};`;
         }
     ],
     [ END,
         () => ""
     ],
     [ WHILE,
-        ({contents}) => "while(*p){" + emitTokens(contents) + "}"
+        ({contents}, indent) => "\twhile (*p) {\n" + emitTokens(contents, indent + 1) + "}"
     ],
     [
         IF,
-        ({contents}) => "if(*p){" + emitTokens(contents) + "}"
+        ({contents}, indent) => "\tif (*p) {\n" + emitTokens(contents, indent + 1) + "}"
     ],
 ]);
 
@@ -114,7 +114,7 @@ const binding = new Map([
 let hasMoved = false;
 
 
-function emitTokens(tokens) {
+function emitTokens(tokens, indent = 0) {
     return tokens.map((e, i) => {
         if (tokens[i].instr !== SET && tokens[i].instr !== PRINT) {
             hasMoved = true;
@@ -124,7 +124,7 @@ function emitTokens(tokens) {
         if (!binding.has(tokens[i].instr)) {
             compilerError("Invalid instruction [%s].", tokens[i].toString());
         }
-        return binding.get(tokens[i].instr)(tokens[i]);
+        return "\t".repeat(indent) + binding.get(tokens[i].instr)(tokens[i], indent);
     }).join("\n");
 }
 
@@ -136,15 +136,15 @@ function emit(tokens) {
     if (!getCompilerFlag("final")) {
         output += "const char* dbgString = \"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\";\n";
     }
-    output += "int main(){";
+    output += "int main() {\n\t";
     if (getCompilerFlag("heap-memory")) {
-        output += "char*tape=malloc(" + getCompilerFlag("tape-size") + ");tape[0]=0;char*size=tape;";
+        output += "char* tape = malloc(" + getCompilerFlag("tape-size") + ");\n\ttape[0] = 0;\n\tchar* size = tape;\n\t";
     } else {
-        output += "char tape[" + getCompilerFlag("tape-size") + "]={0};";
+        output += "char tape[" + getCompilerFlag("tape-size") + "] = {0};\n\t";
     }
-    output += "char*p=tape;";
+    output += "char* p = tape;\n\n";
     output += emitTokens(tokens);
-    return output + "return 0;}";
+    return output + "\n\n\treturn 0;\n}";
 }
 
 module.exports = { emit };

@@ -3,7 +3,7 @@
 
 </h1>
 <h3 align="center">
-    The only brutally optimizing brainfuck compiler.
+    The fastest optimizing brainfuck compiler.
 </h3>
 
 <div align="center">
@@ -28,13 +28,6 @@ FBC is run with the syntax `fbc [file.bf] options`.
 
 ```sh
 $ fbc mandelbrot.bf --final
-```
-
-# BFF Interop
-FBC can compile programs compressed to the BFF file format. It does this automatically.
-
-```sh
-$ fbc mandelbrot.bff --final
 ```
 
 # Licensing
