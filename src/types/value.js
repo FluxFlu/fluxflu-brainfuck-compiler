@@ -3,7 +3,7 @@ const { compilerError } = require("../error/internal_compiler_error");
 
 class Value {
     constructor(...contents) {
-        if (!contents?.length || !(contents instanceof Array) || !contents.every(e => e instanceof ValueType)) {
+        if (!(contents instanceof Array) || !contents.every(e => e instanceof ValueType)) {
             compilerError("Invalid value contents [%o].", contents.map(e => e.format()).join(", "));
         }
         this.contents = contents;

@@ -16,7 +16,7 @@ function calculateOffsets(file) {
             continue;
         }
 
-        if (file[i].is(Rules.InterruptOffset)) {
+        if (file[i].is(Rules.InterruptOffset())) {
             if (currentOffset) {
                 if (currentOffset > 0n) {
                     result.push(new Instruction(RIGHT, new Value(new Constant(currentOffset)), 0n, null, null));

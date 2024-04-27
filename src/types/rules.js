@@ -9,10 +9,6 @@ const Rules = {
     // For example PLUS(-1) => PLUS(255).
     CompressToBytes: null,
     
-    // When two of these instructions are next to each other, the second nullifies the first.
-    // For example, "SET(4), SET(2)" can by optimized to "SET(2)".
-    Nullable: null,
-    
     // The chronological order of these instructions makes no difference when they have a different offset.
     // Eg. "PLUS[1](5), MINUS[0](2)" == "MINUS[0](2), PLUS[1](5)"
     OffsetSortable: null,
@@ -34,13 +30,27 @@ const Rules = {
     // and the instructions' offsets are equal to the other instruction's register,
     // the first instruction cancels the second.
     CancelWhenOppositeRegister: null,
+
+    // This relation describes a specific category of instructions that follow the type pattern:
+    // ( Constant, Constant, Register )
+    // And in which the result follows the pattern:
+    // ( $plus, $mult, %register) => plus + mult * register
+    RegisterType: null,
 };
 
 Object.keys(Rules).forEach((key, index) => {
-    Rules[key] = {
-        _tag: "Rule",
-        value: index + 1,
-        toString: () => key
+    Rules[key] = () => {
+        const rule = {
+            _tag: "Rule",
+            value: index + 1,
+            toString: () => key,
+            to: (data) => {
+                rule.data = data;
+                return rule;
+            },
+            get: () => rule.data
+        };
+        return rule;
     };
 });
 
@@ -51,13 +61,19 @@ class RuleSet {
                 compilerError("Invalid rule [%o].", rule);
             }
         });
-        this.rules = new Set(rules);
+        this.rules = rules;
     }
     has(rule) {
         if (rule._tag != "Rule") {
             compilerError("Invalid rule [%o].", rule);
         }
-        return this.rules.has(rule);
+        return this.rules.some(e => e.value == rule.value);
+    }
+    get(rule) {
+        if (rule._tag != "Rule") {
+            compilerError("Invalid rule [%o].", rule);
+        }
+        return this.rules.find(e => e.value == rule.value);
     }
 }
 

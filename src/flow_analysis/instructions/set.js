@@ -13,7 +13,7 @@ module.exports = ({ tape, ptr, token }) => {
     ptr.modify(({data: ptrData}) => {
         tape.apply(ptrData + tokenOffset, e => e.modify(value => {
             if (value instanceof Constant) {
-                return new Constant(byte(value.data - tokenValue));
+                return new Constant(byte(tokenValue));
             } else {
                 TODO("Add register handling.");
             }

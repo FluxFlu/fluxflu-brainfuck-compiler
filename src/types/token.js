@@ -14,7 +14,7 @@ class Token {
     }
     is(rule) {
         if (rule._tag == "Rule") {
-            return this.instr.rules.has(rule);
+            return this.instr.rules.get(rule);
         } else if (rule._tag == "Relation") {
             return this.instr.relations.get(rule);
         }

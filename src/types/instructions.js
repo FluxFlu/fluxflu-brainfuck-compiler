@@ -7,10 +7,10 @@ const instructions = {
     // tape[index + o] += x
     PLUS: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.Repeatable,
-            Rules.CompressToBytes,
-            Rules.OffsetSortable,
+        rules    : () => new RuleSet(
+            Rules.Repeatable(),
+            Rules.CompressToBytes(),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.MINUS),
@@ -18,16 +18,19 @@ const instructions = {
                 instruction: instructions.SET,
                 operation: (a, b) => new Value(new Constant(a.constant() + b.constant()))
             }),
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
         ),
     },
     // MINUS[o]( $x )
     // tape[index + o] -= x
     MINUS: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.Repeatable,
-            Rules.CompressToBytes,
-            Rules.OffsetSortable,
+        rules    : () => new RuleSet(
+            Rules.Repeatable(),
+            Rules.CompressToBytes(),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.PLUS),
@@ -35,14 +38,17 @@ const instructions = {
                 instruction: instructions.SET,
                 operation: (a, b) => new Value(new Constant(a.constant() - b.constant()))
             }),
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
         ),
     },
     // LEFT( $x )
     // index -= x
     LEFT: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.Repeatable,
+        rules    : () => new RuleSet(
+            Rules.Repeatable(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.RIGHT)
@@ -52,8 +58,8 @@ const instructions = {
     // index += x
     RIGHT: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.Repeatable,
+        rules    : () => new RuleSet(
+            Rules.Repeatable(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.LEFT)
@@ -63,7 +69,7 @@ const instructions = {
     // while (tape[index]) {
     START_LOOP: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.END_LOOP)
         ),
@@ -72,8 +78,8 @@ const instructions = {
     // }
     END_LOOP: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.ImpliesZero
+        rules    : () => new RuleSet(
+            Rules.ImpliesZero()
         ),
         relations: () => new RelationSet(),
     },
@@ -81,105 +87,129 @@ const instructions = {
     // tape[index + o] = getchar();
     INPUT: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
     // OUTPUT
     // putchar(tape[index + o])
     OUTPUT: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
     // DEBUG
     // outputDebugInfo()
     DEBUG: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
     // PRINT( $str )
     // puts(str)
     PRINT: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
     // SET[o]( $str )
     // tape[index + o] = str
     SET: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.CompressToBytes,
-            Rules.Nullable,
-            Rules.OffsetSortable,
+        rules    : () => new RuleSet(
+            Rules.CompressToBytes(),
+            Rules.OffsetSortable(),
         ),
-        relations: () => new RelationSet(),
+        relations: () => new RelationSet(
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
+        ),
     },
 
-    // RELATIVE_MULT_PLUS[o]( $mult, %value )
-    // tape[index + o] += mult * value
+    // RELATIVE_PLUS[o]( $plus, $mult, %value )
+    // tape[index + o] += plus + mult * value
     RELATIVE_PLUS: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(
+            Rules.RegisterType().to(instructions.PLUS),
+        ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
                 instruction: instructions.RELATIVE_SET,
                 operation: (a, b) => new Value(new Constant(a.constant() + b.contents[0].data), b.contents[1], b.contents[2])
             }),
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
         ),
     },
-    // RELATIVE_MULT_MINUS[o]( $mult, %value )
-    // tape[index + o] -= mult * value
+    // RELATIVE_MINUS[o]( $plus, $mult, %value )
+    // tape[index + o] -= plus + mult * value
     RELATIVE_MINUS: {
         type     : "Instruction",
-        rules    : new RuleSet(),
+        rules    : () => new RuleSet(
+            Rules.RegisterType().to(instructions.MINUS),
+        ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
                 instruction: instructions.RELATIVE_SET,
                 operation: (a, b) => new Value(new Constant(a.constant() - b.contents[0].data), new Constant(-1n * b.contents[1].data), b.contents[2])
             }),
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
         ),
     },
+    // RELATIVE_SET[o]( $plus, $mult, %value )
+    // tape[index + o] = plus + mult * value
     RELATIVE_SET: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.CancelWhenOppositeRegister
+        rules    : () => new RuleSet(
+            Rules.CancelWhenOppositeRegister(),
+            Rules.RegisterType().to(instructions.MINUS),
         ),
-        relations: () => new RelationSet(),
+        relations: () => new RelationSet(
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
+        ),
     },
     // CHECK_SET[o]( $value, %check )
     // if (check) tape[index + o] = value
     CHECK_SET: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.RequiresNonzero,
+        rules    : () => new RuleSet(
+            Rules.RequiresNonzero(),
         ),
-        relations: () => new RelationSet(),
+        relations: () => new RelationSet(
+            Relations.Nullable(instructions.SET),
+            Relations.Nullable(instructions.INPUT),
+            Relations.Nullable(instructions.RELATIVE_SET),
+        ),
     },
 
     END: {
         type     : "Instruction",
-        rules    : new RuleSet(
-            Rules.InterruptOffset,
+        rules    : () => new RuleSet(
+            Rules.InterruptOffset(),
         ),
         relations: () => new RelationSet(),
     },
     WHILE: {
         type     : "ContainerInstruction",
-        rules    : new RuleSet(
-            Rules.ImpliesZero,
-            Rules.RequiresNonzero,
-            Rules.InterruptOffset,
+        rules    : () => new RuleSet(
+            Rules.ImpliesZero(),
+            Rules.RequiresNonzero(),
+            Rules.InterruptOffset(),
         ),
         relations: () => new RelationSet(),
     },
     IF: {
         type     : "ContainerInstruction",
-        rules    : new RuleSet(
-            Rules.ImpliesZero,
-            Rules.RequiresNonzero,
-            Rules.InterruptOffset,
+        rules    : () => new RuleSet(
+            Rules.ImpliesZero(),
+            Rules.RequiresNonzero(),
+            Rules.InterruptOffset(),
         ),
         relations: () => new RelationSet(),
     },
@@ -195,6 +225,7 @@ Object.keys(instructions).forEach((key, index) => {
     };
 });
 Object.keys(instructions).forEach(key => {
+    instructions[key].rules = instructions[key].rules();
     instructions[key].relations = instructions[key].relations();
 });
 

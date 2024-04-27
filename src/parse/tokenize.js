@@ -35,8 +35,11 @@ function tokenize(file) {
             char++;
             continue;
         }
-
-        tokens.push(new Instruction(operators.get(file[i]), new Value(new Constant(1n)), 0n, line, char));
+        if (",.[]".includes(file[i])) {
+            tokens.push(new Instruction(operators.get(file[i]), new Value(                ), 0n, line, char));
+        } else {
+            tokens.push(new Instruction(operators.get(file[i]), new Value(new Constant(1n)), 0n, line, char));
+        }
         char++;
     }
     return tokens;

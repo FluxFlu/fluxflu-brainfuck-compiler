@@ -10,6 +10,12 @@ const Relations = {
     // E :: Attachment<T>(T, (a, b) => a + b)
     // "T(3), E(2)" == "T(5)"
     Attachment: 1,
+    
+    // When two of these instructions are next to each other, the second nullifies the first.
+    // For example,
+    // PLUS :: Nullable<SET>
+    // Which indicates that "PLUS(4), SET(2)" can by optimized to "SET(2)".
+    Nullable: 1,
 };
 
 Object.keys(Relations).forEach((key, index) => {

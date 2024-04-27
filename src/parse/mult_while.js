@@ -25,6 +25,7 @@ function multWhile(file) {
                 const instrList = arr.filter(e => (e.instr == PLUS || e.instr == MINUS || e.instr == SET) && e.offset !== 0n);
                 instrList.push(arr.find(e => (e.instr == PLUS || e.instr == MINUS || e.instr == SET) && e.offset === 0n));
                 for (let f = 0; f < instrList.length; f++) {
+                    const [line, char] = [instrList[f].line, instrList[f].char];
                     if (instrList[f].instr == PLUS) {
                         result.push(new Instruction(RELATIVE_PLUS, new Value(
                             // tape[index + offset] += x + y * tape[z + index]
@@ -33,11 +34,12 @@ function multWhile(file) {
                             new Constant(instrList[f].value.constant()), // y
                             new Register(0n)                             // z
                         ), instrList[f].offset                           // offset
+                        , line, char
                         ));
                         continue;
                     } else if (instrList[f].instr == MINUS) {
                         if (instrList[f].offset === 0n) {
-                            result.push(new Instruction(SET, new Value(new Constant(0n)), 0n));
+                            result.push(new Instruction(SET, new Value(new Constant(0n)), 0n, line, char));
                         } else {
                             result.push(new Instruction(RELATIVE_MINUS, new Value(
                                 // tape[index + offset] += x + y * tape[z + index]
@@ -46,11 +48,12 @@ function multWhile(file) {
                                 new Constant(instrList[f].value.constant()), // y
                                 new Register(0n)                             // z
                             ), instrList[f].offset                           // offset
+                            , line, char
                             ));
                         }
                         continue;
                     } else if (instrList[f].instr == SET) {
-                        result.push(new Instruction(CHECK_SET, new Value(new Constant(instrList[f].value.constant()), new Register(0n)), instrList[f].offset));
+                        result.push(new Instruction(CHECK_SET, new Value(new Constant(instrList[f].value.constant()), new Register(0n)), instrList[f].offset, line, char));
                         continue;
                     } else {
                         compilerError("Invalid relative instruction [%s].", instrList[f].toString());

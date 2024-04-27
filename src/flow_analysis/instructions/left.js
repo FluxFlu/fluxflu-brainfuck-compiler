@@ -1,6 +1,7 @@
 const { compilerError, TODO } = require("../../error/internal_compiler_error");
 const { Constant } = require("../../types/value");
 const { Unknown } = require("../simulation_types");
+const { resetState } = require("../utils/reset_state");
 
 
 module.exports = (state, { ptr, token }) => {
@@ -9,7 +10,12 @@ module.exports = (state, { ptr, token }) => {
         
         state.ptr = ptr.modify(value => {
             if (value instanceof Constant) {
-                return new Constant(value.data + tokenValue);
+                if (tokenValue > value.data && state.positionCompromised) {
+                    resetState(state);
+                    return new Constant(0n);
+                } else {
+                    return new Constant(tokenValue >= value.data ? 0n : value.data - tokenValue);
+                }
             } else {
                 TODO("Add register handling.");
             }

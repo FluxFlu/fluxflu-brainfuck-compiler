@@ -1,5 +1,6 @@
 const { Rules } = require("../types/rules");
 const { Container } = require("../types/token");
+const { byte } = require("../utils/toByte");
 
 const optimizations = [
     require("./optimizations/basic_create_set"),
@@ -10,6 +11,7 @@ const optimizations = [
     require("./optimizations/attachment"),
     require("./optimizations/repeatable"),
     require("./optimizations/loop_when_implied_zero"),
+    require("./optimizations/redundant_register_info"),
 ];
 
 function optimize(tokens) {
@@ -47,13 +49,10 @@ function optimize(tokens) {
         
         // Compress values to bytes. Eg, -1 => 255.
         state.result.forEach(token => {
-            if (!token.is(Rules.CompressToBytes)) {
+            if (!token.is(Rules.CompressToBytes())) {
                 return;
             }
-            while (token.value.constant() < 0) {
-                token.value.contents[0].data += 256n;
-            }
-            token.value.contents[0].data %= 256n;
+            token.value.contents[0].data = byte(token.value.contents[0].data);
         });
         state.tokens = state.result;
     }

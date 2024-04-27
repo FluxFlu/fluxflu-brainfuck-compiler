@@ -9,6 +9,13 @@ class SimValue {
     modify() {
         compilerError("Invalid SimValue `modify`.");
     }
+
+    toString() {
+        compilerError("Cannot call `toString` of SimValue. Use `format` instead.");
+    }
+    format() {
+        compilerError("Invalid SimValue `format`.");
+    }
 }
 
 class Single extends SimValue {
@@ -20,10 +27,16 @@ class Single extends SimValue {
         this.value = value;
     }
     add(fn) {
+        if (this.value.equals(fn(this.value))) {
+            return this;
+        }
         return new Union(this.value, fn(this.value));
     }
     modify(fn) {
         return new Single(fn(this.value));
+    }
+    format() {
+        return this.value.format();
     }
 }
 
@@ -37,16 +50,27 @@ class Union extends SimValue {
     }
     add(fn) {
         let values = [];
-        this.values        .forEach(value => values.push(value));
+        this.values                    .forEach(value => values.push(value));
         Array.from(this.values).map(fn).forEach(value => values.push(value));
         values = values.filter((e, i) => (i == values.length - 1) || !(e.equals(values[i + 1])));
         if (values.length > Unknown.NumPossibleValues) {
             return new Unknown();
         }
+        if (values.length == 1) {
+            return new Single(values[0]);
+        }
         return new Union(...values);
     }
     modify(fn) {
-        return new Union(this.values.map(fn));
+        let values = Array.from(this.values).map(fn);
+        values = values.filter((e, i) => (i == values.length - 1) || !(e.equals(values[i + 1])));
+        if (values.length == 1) {
+            return new Single(values[0]);
+        }
+        return new Union(...values);
+    }
+    format() {
+        return Array.from(this.values).map(e => e.format()).join(" | ");
     }
 }
 
@@ -55,8 +79,15 @@ class Unknown extends SimValue {
     constructor() {
         super();
     }
-    add() {}
-    modify() {}
+    add() {
+        return this;
+    }
+    modify() {
+        return this;
+    }
+    format() {
+        return "⊤";
+    }
 }
 
 module.exports = { Single, Union, Unknown };

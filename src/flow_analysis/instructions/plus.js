@@ -1,32 +1,23 @@
 const { compilerError, TODO } = require("../../error/internal_compiler_error");
 const { Constant } = require("../../types/value");
-const { Unknown, Union, Single } = require("../simulation_utils");
+const { byte } = require("../../utils/toByte");
+const { Unknown } = require("../simulation_types");
 
 
-module.exports = (state, { tape, ptr, token, ctxMaybe }) => {
+module.exports = ({ tape, ptr, token }) => {
     const tokenOffset = token.offset;
     const tokenValue = token.value.constant();
-    if (!(ptr instanceof Unknown)) {
-        if (ptr instanceof Union) {
-            TODO("Add union handling.");
-        } else if (ptr instanceof Single) {
-            const ptrData = ptr.value.data;
-            tape[ptrData + tokenOffset] ||= new Single(new Constant(0n));
-            
-            const fn = e => ctxMaybe ? tape[ptrData + tokenOffset].add(e) : tape[ptrData + tokenOffset].modify(e);
-            console.log(ctxMaybe);
-
-            tape[ptrData + tokenOffset] = fn(value => {
-                if (value instanceof Constant) {
-                    return new Constant(value.data + tokenValue);
-                } else {
-                    TODO("Add register handling.");
-                }
-            });
-        } else {
-            compilerError("Invalid ptr value [%o].", ptr);
-        }
-    } else {
+    if (ptr instanceof Unknown) {
         compilerError("Invalid ptr value [%o].", ptr);
     }
-}
+    ptr.modify(({data: ptrData}) => {
+        tape.apply(ptrData + tokenOffset, e => e.modify(value => {
+            if (value instanceof Constant) {
+                return new Constant(byte(value.data + tokenValue));
+            } else {
+                TODO("Add register handling.");
+            }
+        }));
+        return new Constant(ptrData);
+    });
+};

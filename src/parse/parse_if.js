@@ -11,7 +11,7 @@ function parseIf(file) {
                 let arr = file[i].contents;
                 if (
                     arr.at(-2)?.instr == SET && arr.at(-2).value.constant() == 0n && arr.at(-2).offset == 0n ||
-                    arr.at(-2)?.is(Rules.ImpliesZero)
+                    arr.at(-2)?.is(Rules.ImpliesZero())
                 ) {
                     if (arr.at(-1).instr !== END) {
                         compilerError("Invalid loop [%o].", file[i]);
