@@ -53,7 +53,7 @@ function multWhile(file) {
                         }
                         continue;
                     } else if (instrList[f].instr == SET) {
-                        result.push(new Instruction(CHECK_SET, new Value(new Constant(instrList[f].value.constant()), new Register(0n)), instrList[f].offset, line, char));
+                        result.push(new Instruction(CHECK_SET, new Value(new Constant(0n), new Register(0n), new Constant(instrList[f].value.constant())), instrList[f].offset, line, char));
                         continue;
                     } else {
                         compilerError("Invalid relative instruction [%s].", instrList[f].toString());

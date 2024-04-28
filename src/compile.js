@@ -8,6 +8,7 @@ const { multWhile } = require("./parse/mult_while");
 const { parseIf } = require("./parse/parse_if");
 const { analyze } = require("./flow_analysis/analyze");
 const { Container } = require("./types/token");
+const { delayModify } = require("./parse/delay_modify");
 
 function compile(file) {
     file = file.toString();
@@ -30,6 +31,7 @@ function compile(file) {
         file = offsetSort(file);
         file = multWhile(file);
         file = parseIf(file);
+        file = delayModify(file);
         file.forEach(stripAnalysisState);
         file = analyze(file);
     }

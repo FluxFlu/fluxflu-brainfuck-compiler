@@ -94,8 +94,8 @@ const binding = new Map([
     ],
     [ CHECK_SET,
         (token) => {
-            token.value.forceMatch(Constant, Register);
-            return `\tif (p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[0].emit()};`;
+            token.value.forceMatch(Constant, Register, Constant);
+            return `\tif (${token.value.contents[0].emit()} + p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[2].emit()};`;
         }
     ],
     [ END,

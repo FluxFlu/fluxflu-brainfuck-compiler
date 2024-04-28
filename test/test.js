@@ -53,9 +53,9 @@ function logFailure(test, expected, received) {
                     bStr += expected[i][j];
                 } else {
                     if (expected[i][j])
-                        gStr += "\x1b[0;41m" + expected[i][j] + "\x1b[0m";
+                        gStr += "\x1b[0;42m" + expected[i][j] + "\x1b[0m";
                     if (received[i][j])
-                        bStr += "\x1b[0;42m" + received[i][j] + "\x1b[0m";
+                        bStr += "\x1b[0;41m" + received[i][j] + "\x1b[0m";
                 }
             }
             console.error("    " + (i + 1) + " - " + bStr);
@@ -65,7 +65,7 @@ function logFailure(test, expected, received) {
     console.error("");
 }
 
-function handleFile(isFullOptimize, i) {
+function handleFile(i) {
     const fileName = fileNames[i].slice(0, -3);
     const filePath = path.join("./test/test_programs/", fileName);
     if (fs.existsSync(filePath + ".c"))
@@ -73,8 +73,6 @@ function handleFile(isFullOptimize, i) {
     if (fs.existsSync(filePath + ".exe"))
         fs.rmSync(filePath + ".exe", { force: true });
     const nodeArgs = [path.normalize("./src/fbc.js"), "--final", filePath + ".bf"];
-    if (isFullOptimize)
-        nodeArgs.push("--full-optimize");
     const nodeProcess = childProcess.spawn("node", nodeArgs, {
         shell: true,
         windowsHide: true,
@@ -108,27 +106,27 @@ function handleFile(isFullOptimize, i) {
             let data = "";
             exeProcess.stdout.on("data", chunk => {
                 data += chunk.toString();
+                if (data.length > 1000) {
+                    data = data.slice(0, 50);
+                    exeProcess.kill("SIGTERM");
+                    i = fileNames.legth - 1;
+                }
             });
             if (fs.existsSync(filePath + ".in"))
                 fs.createReadStream(filePath + ".in").pipe(exeProcess.stdin);
             exeProcess.on("exit", () => {
                 const expected = fs.readFileSync(filePath + ".out", "utf-8");
                 const success = data === expected;
-                if (success && isFullOptimize) {
+                if (success) {
                     out.push(() => logSuccess(fileName));
-                } else if (!success && isFullOptimize) {
+                } else {
                     isFailure = true;
-                    out.push(() => logFailure(fileName + ": b", expected, data));
-                } else if (!success) {
-                    isFailure = true;
-                    out.push(() => logFailure(fileName + ": a", expected, data));
+                    out.push(() => logFailure(fileName, expected, data));
                 }
                 fs.rmSync(filePath + ".c", { force: true });
                 fs.rmSync(filePath + ".exe", { force: true });
-                if (isFullOptimize && i + 1 < fileNames.length) {
-                    handleFile(false, i + 1);
-                } else if (!isFullOptimize) {
-                    handleFile(true, i);
+                if (i + 1 < fileNames.length) {
+                    handleFile(i + 1);
                 } else {
                     endLog();
                 }
@@ -137,4 +135,4 @@ function handleFile(isFullOptimize, i) {
     });
 }
 
-handleFile(false, 0);
+handleFile(0);

@@ -7,10 +7,12 @@ const { Unknown, Single } = require("../simulation_types");
 module.exports = ({ tape, ptr, token }) => {
     const tokenOffset = token.offset;
 
-    token.value.forceMatch(Constant, Register);
+    token.value.forceMatch(Constant, Register, Constant);
     
-    const tokenValue = token.value.contents[0].data;
+    const tokenRegisterMod = token.value.contents[0].data;
     const tokenCheckLocation = token.value.contents[1].data;
+    const tokenValue = token.value.contents[2].data;
+    
     if (ptr instanceof Unknown) {
         compilerError("Invalid ptr value [%o].", ptr);
     }
@@ -19,7 +21,7 @@ module.exports = ({ tape, ptr, token }) => {
         tokenCheckRegister.modify(tokenCheckRegisterType => {
             if (tokenCheckRegisterType instanceof Constant) {
                 const tokenCheckValue = tokenCheckRegisterType.data;
-                if (tokenCheckValue) {
+                if (byte(tokenCheckValue + tokenRegisterMod)) {
                     tape.set(ptrData + tokenOffset, new Single(new Constant(byte(tokenValue))));
                 }
             } else if (tokenCheckRegisterType instanceof Register) {

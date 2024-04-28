@@ -132,6 +132,7 @@ const instructions = {
         type     : "Instruction",
         rules    : () => new RuleSet(
             Rules.RegisterType().to(instructions.PLUS),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
@@ -149,6 +150,7 @@ const instructions = {
         type     : "Instruction",
         rules    : () => new RuleSet(
             Rules.RegisterType().to(instructions.MINUS),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
@@ -167,6 +169,7 @@ const instructions = {
         rules    : () => new RuleSet(
             Rules.CancelWhenOppositeRegister(),
             Rules.RegisterType().to(instructions.MINUS),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Nullable(instructions.SET),
@@ -174,12 +177,13 @@ const instructions = {
             Relations.Nullable(instructions.RELATIVE_SET),
         ),
     },
-    // CHECK_SET[o]( $value, %check )
-    // if (check) tape[index + o] = value
+    // CHECK_SET[o]( $modify, %check, $value )
+    // if (modify + check) tape[index + o] = value
     CHECK_SET: {
         type     : "Instruction",
         rules    : () => new RuleSet(
             Rules.RequiresNonzero(),
+            Rules.OffsetSortable(),
         ),
         relations: () => new RelationSet(
             Relations.Nullable(instructions.SET),
