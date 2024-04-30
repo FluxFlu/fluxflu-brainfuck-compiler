@@ -11,6 +11,7 @@ const instructions = {
             Rules.Repeatable(),
             Rules.CompressToBytes(),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.MINUS),
@@ -31,6 +32,7 @@ const instructions = {
             Rules.Repeatable(),
             Rules.CompressToBytes(),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Opposites(instructions.PLUS),
@@ -48,10 +50,12 @@ const instructions = {
     LEFT: {
         type     : "Instruction",
         rules    : () => new RuleSet(
+            Rules.Moves(),
             Rules.Repeatable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
-            Relations.Opposites(instructions.RIGHT)
+            Relations.Opposites(instructions.RIGHT),
         ),
     },
     // RIGHT( $x )
@@ -59,27 +63,30 @@ const instructions = {
     RIGHT: {
         type     : "Instruction",
         rules    : () => new RuleSet(
+            Rules.Moves(),
             Rules.Repeatable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
-            Relations.Opposites(instructions.LEFT)
+            Relations.Opposites(instructions.LEFT),
         ),
     },
     // START_LOOP
     // while (tape[index]) {
     START_LOOP: {
         type     : "Instruction",
-        rules    : () => new RuleSet(),
-        relations: () => new RelationSet(
-            Relations.Opposites(instructions.END_LOOP)
+        rules    : () => new RuleSet(
+            Rules.InterruptOffset(),
         ),
+        relations: () => new RelationSet(),
     },
     // END_LOOP
     // }
     END_LOOP: {
         type     : "Instruction",
         rules    : () => new RuleSet(
-            Rules.ImpliesZero()
+            Rules.ImpliesZero(),
+            Rules.InterruptOffset(),
         ),
         relations: () => new RelationSet(),
     },
@@ -90,23 +97,27 @@ const instructions = {
         rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
-    // OUTPUT
+    // OUTPUT[o]
     // putchar(tape[index + o])
     OUTPUT: {
         type     : "Instruction",
         rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
     },
+    // CONST_PRINT( "str" )
+    // puts(x);
+    CONST_PRINT: {
+        type     : "Instruction",
+        rules    : () => new RuleSet(
+            Rules.NullOffset(),
+            Rules.Repeatable(),
+        ),
+        relations: () => new RelationSet(),
+    },
+
     // DEBUG
     // outputDebugInfo()
     DEBUG: {
-        type     : "Instruction",
-        rules    : () => new RuleSet(),
-        relations: () => new RelationSet(),
-    },
-    // PRINT( $str )
-    // puts(str)
-    PRINT: {
         type     : "Instruction",
         rules    : () => new RuleSet(),
         relations: () => new RelationSet(),
@@ -118,12 +129,37 @@ const instructions = {
         rules    : () => new RuleSet(
             Rules.CompressToBytes(),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Nullable(instructions.SET),
             Relations.Nullable(instructions.INPUT),
             Relations.Nullable(instructions.RELATIVE_SET),
         ),
+    },
+
+    // SCAN_LEFT( $by )
+    // while (tape[index]) index -= by;
+    SCAN_LEFT: {
+        type     : "Instruction",
+        rules    : () => new RuleSet(
+            Rules.Moves(),
+            Rules.DoesNotOutput(),
+            Rules.InterruptOffset(),
+        ),
+        relations: () => new RelationSet(),
+    },
+
+    // SCAN_RIGHT( $by )
+    // while (tape[index]) index += by;
+    SCAN_RIGHT: {
+        type     : "Instruction",
+        rules    : () => new RuleSet(
+            Rules.Moves(),
+            Rules.DoesNotOutput(),
+            Rules.InterruptOffset(),
+        ),
+        relations: () => new RelationSet(),
     },
 
     // RELATIVE_PLUS[o]( $plus, $mult, %value )
@@ -133,6 +169,7 @@ const instructions = {
         rules    : () => new RuleSet(
             Rules.RegisterType().to(instructions.PLUS),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
@@ -151,6 +188,7 @@ const instructions = {
         rules    : () => new RuleSet(
             Rules.RegisterType().to(instructions.MINUS),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Attachment(instructions.SET).to({
@@ -168,8 +206,9 @@ const instructions = {
         type     : "Instruction",
         rules    : () => new RuleSet(
             Rules.CancelWhenOppositeRegister(),
-            Rules.RegisterType().to(instructions.MINUS),
+            Rules.RegisterType().to(instructions.SET),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Nullable(instructions.SET),
@@ -184,6 +223,7 @@ const instructions = {
         rules    : () => new RuleSet(
             Rules.RequiresNonzero(),
             Rules.OffsetSortable(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(
             Relations.Nullable(instructions.SET),
@@ -196,9 +236,13 @@ const instructions = {
         type     : "Instruction",
         rules    : () => new RuleSet(
             Rules.InterruptOffset(),
+            Rules.DoesNotOutput(),
         ),
         relations: () => new RelationSet(),
     },
+
+    // WHILE
+    // while (tape[index]) { contents }
     WHILE: {
         type     : "ContainerInstruction",
         rules    : () => new RuleSet(
@@ -208,6 +252,22 @@ const instructions = {
         ),
         relations: () => new RelationSet(),
     },
+    
+    // STILL_WHILE
+    // pre_index = index
+    // while (tape[index]) { contents }
+    // assert(pre_index == index)
+    STILL_WHILE: {
+        type     : "ContainerInstruction",
+        rules    : () => new RuleSet(
+            Rules.ImpliesZero(),
+            Rules.RequiresNonzero(),
+        ),
+        relations: () => new RelationSet(),
+    },
+
+    // IF
+    // if (tape[index]) { contents }
     IF: {
         type     : "ContainerInstruction",
         rules    : () => new RuleSet(

@@ -1,5 +1,5 @@
 const { Instruction } = require("../types/token");
-const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT, DEBUG } = require("../types/instructions");
+const { PLUS, MINUS, LEFT, RIGHT, START_LOOP, END_LOOP, INPUT, OUTPUT } = require("../types/instructions");
 const { Value, Constant } = require("../types/value");
 
 const operators = new Map([
@@ -12,7 +12,8 @@ const operators = new Map([
     [",", INPUT],
     [".", OUTPUT],
 
-    ["#", DEBUG],
+    // TODO: Add debugging. Perhaps with custom characters.
+    // ["#", DEBUG],
 ]);
 
 function tokenize(file) {

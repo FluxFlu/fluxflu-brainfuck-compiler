@@ -4,6 +4,7 @@ const { byte } = require("../utils/toByte");
 
 const optimizations = [
     require("./optimizations/basic_create_set"),
+    require("./optimizations/basic_create_scan"),
     require("./optimizations/cancel_nullable"),
     require("./optimizations/cancel_opposite_register"),
     require("./optimizations/cancel_opposite_instructions"),
@@ -11,15 +12,22 @@ const optimizations = [
     require("./optimizations/attachment"),
     require("./optimizations/repeatable"),
     require("./optimizations/loop_when_implied_zero"),
+    require("./optimizations/remove_trailing_instructions"),
+
+    // These instructions rely on -O2.
+    // They could hypothetically be removed when compiling with -O1 or -O0,
+    // but comptimes are already very fast in those cases.
     require("./optimizations/redundant_register_info"),
+    require("./optimizations/const_print"),
 ];
 
-function optimize(tokens) {
+function optimize(tokens, global = true) {
     const state = {
         tokens,
         result: [],
         index: 0,
-        repeatOptimizations: true
+        repeatOptimizations: true,
+        global,
     };
 
     while (state.repeatOptimizations) {
@@ -38,7 +46,7 @@ function optimize(tokens) {
             });
 
             if (state.tokens[state.index] instanceof Container) {
-                state.tokens[state.index].pass(optimize);
+                state.tokens[state.index].pass(e => optimize(e, false));
             }
 
             // If no optimizations can be made, push the operation as normal.

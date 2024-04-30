@@ -1,5 +1,5 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { PLUS, RIGHT, WHILE, MINUS, END, LEFT, OUTPUT, INPUT, SET, RELATIVE_PLUS, RELATIVE_MINUS, CHECK_SET, IF, RELATIVE_SET } = require("../types/instructions");
+const { PLUS, RIGHT, WHILE, MINUS, END, LEFT, OUTPUT, INPUT, SET, RELATIVE_PLUS, RELATIVE_MINUS, CHECK_SET, IF, RELATIVE_SET, CONST_PRINT, STILL_WHILE, SCAN_LEFT, SCAN_RIGHT } = require("../types/instructions");
 const { Constant } = require("../types/value");
 const { Single, Unknown, Union } = require("./simulation_types");
 const { Tape } = require("./utils/tape");
@@ -11,6 +11,7 @@ const instructions = new Map([
     [RIGHT, require("./instructions/right")],
     [INPUT, require("./instructions/input")],
     [OUTPUT, () => { }],
+    [CONST_PRINT, () => { }],
 
     [SET, require("./instructions/set")],
 
@@ -19,9 +20,13 @@ const instructions = new Map([
     [RELATIVE_SET, require("./instructions/relative_set")],
     [CHECK_SET, require("./instructions/check_set")],
 
+    [SCAN_LEFT, require("./instructions/scan_left")],
+    [SCAN_RIGHT, require("./instructions/scan_right")],
+
 
     [END, () => { }],
     [WHILE, require("./instructions/while")],
+    [STILL_WHILE, require("./instructions/while")],
     [IF, require("./instructions/if")],
 ]);
 

@@ -43,7 +43,7 @@ function logFailure(test, expected, received) {
             console.error("    " + (i + 1) + " + \x1b[0;42m\\n\x1b[0m");
             continue;
         }
-        
+
         if (expected[i] !== received[i]) {
             let gStr = "";
             let bStr = "";
@@ -72,7 +72,7 @@ function handleFile(i) {
         fs.rmSync(filePath + ".c", { force: true });
     if (fs.existsSync(filePath + ".exe"))
         fs.rmSync(filePath + ".exe", { force: true });
-    const nodeArgs = [path.normalize("./src/fbc.js"), "--final", filePath + ".bf"];
+    const nodeArgs = [path.normalize("./src/fbc.js"), "--final", "--slow-optimize", "-O2", filePath + ".bf"];
     const nodeProcess = childProcess.spawn("node", nodeArgs, {
         shell: true,
         windowsHide: true,

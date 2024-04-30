@@ -7,7 +7,7 @@ module.exports = (state, { tokens, i }) => {
     if (
         i && (
             tokens[i - 1].is(Rules.ImpliesZero()) ||
-            tokens[i - 1].instr == SET && tokens[i - 1].value.constant() == 0 && tokens[i - 1].offset == 0
+            tokens[i - 1].instr == SET && tokens[i - 1].value.constant() == 0
         ) && (tokens[i].is(Rules.RequiresNonzero())) && tokens[i].offset == tokens[i - 1].offset
     ) {
         state.repeatOptimizations = true;

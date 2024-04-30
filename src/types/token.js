@@ -19,6 +19,9 @@ class Token {
             return this.instr.relations.get(rule);
         }
     }
+    copy() {
+        compilerError("Cannot use base `copy` of Token. All Token subclasses must implement their own `copy`.");
+    }
 }
 
 class Instruction extends Token {
@@ -43,6 +46,9 @@ class Instruction extends Token {
     instrSize() {
         return 1n;
     }
+    copy() {
+        return new Instruction(this.instr, this.value, this.offset, this.line, this.char);
+    }
 }
 
 class Container extends Token {
@@ -63,6 +69,9 @@ class Container extends Token {
     }
     pass (fn) {
         this.contents = fn(this.contents);
+    }
+    copy() {
+        return new Container(this.instr, this.contents, this.offset, this.line, this.char);
     }
 }
 

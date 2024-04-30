@@ -1,14 +1,14 @@
 const { Single } = require("../../flow_analysis/simulation_types");
-const { Rules } = require("../../types/rules");
+const { OUTPUT, CONST_PRINT } = require("../../types/instructions");
 const { Instruction } = require("../../types/token");
-const { Constant, Value, Register } = require("../../types/value");
+const { Value, Register, StringConstant } = require("../../types/value");
 const { byte } = require("../../utils/toByte");
 
 
 module.exports = (state, { tokens, i }) => {
-    // If the current operation is a register type, we check if the register is static at compile-time. If so, we don't need the register.
-    if (tokens[i].is(Rules.RegisterType())) {
-        tokens[i].value.forceMatch(Constant, Constant, Register);
+    // If the current operation is a print, we check if the value is static at compile-time. If so, we don't need the register.
+    if (tokens[i].instr == OUTPUT) {
+        tokens[i].value.forceMatch();
         const tokenState = tokens[i].state;
         if (!tokenState) {
             return false;
@@ -27,7 +27,7 @@ module.exports = (state, { tokens, i }) => {
         } else {
             ptrData = ptrType.data;
         }
-        const tokenRegisterData = tokens[i].value.contents[2].data;
+        const tokenRegisterData = tokens[i].offset;
         ptrData += tokenRegisterData;
         if (!(tokenState.tape.get(ptrData) instanceof Single)) {
             return false;
@@ -43,10 +43,8 @@ module.exports = (state, { tokens, i }) => {
         } else {
             registerData = registerType.data;
         }
-        const plus = tokens[i].value.contents[0].data;
-        const mult = tokens[i].value.contents[1].data;
-        const targetInstr = tokens[i].is(Rules.RegisterType()).get();
-        state.result.push(new Instruction(targetInstr, new Value(new Constant(byte(plus + mult * registerData))), tokens[i].offset, tokens[i].line, tokens[i].char));
+
+        state.result.push(new Instruction(CONST_PRINT, new Value(new StringConstant(String.fromCharCode(Number(byte(registerData))))), 0n, tokens[i].line, tokens[i].char));
         state.repeatOptimizations = true;
         return true;
     }

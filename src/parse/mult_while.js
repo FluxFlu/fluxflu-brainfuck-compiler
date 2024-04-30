@@ -1,5 +1,5 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { LEFT, RIGHT, MINUS, WHILE, PLUS, SET, RELATIVE_PLUS, RELATIVE_MINUS, CHECK_SET, END } = require("../types/instructions");
+const { LEFT, RIGHT, MINUS, WHILE, PLUS, SET, RELATIVE_PLUS, RELATIVE_MINUS, CHECK_SET, END, STILL_WHILE } = require("../types/instructions");
 const { Instruction, Container } = require("../types/token");
 const { Value, Constant, Register } = require("../types/value");
 
@@ -8,8 +8,8 @@ function multWhile(file) {
     for (let i = 0; i < file.length; i++) {
         if (file[i] instanceof Container) {
             const arr = file[i].contents;
-
-            if (file[i].instr != WHILE || arr.some(e => ![LEFT, RIGHT, PLUS, MINUS, SET, END].includes(e.instr))) {
+            const offset = file[i].offset;
+            if (![WHILE, STILL_WHILE].includes(file[i].instr) || arr.some(e => ![LEFT, RIGHT, PLUS, MINUS, SET, END].includes(e.instr))) {
                 file[i].pass(multWhile);
                 result.push(file[i]);
                 continue;
@@ -33,13 +33,13 @@ function multWhile(file) {
                             new Constant(0n),                            // x
                             new Constant(instrList[f].value.constant()), // y
                             new Register(0n)                             // z
-                        ), instrList[f].offset                           // offset
+                        ), instrList[f].offset + offset                  // offset
                         , line, char
                         ));
                         continue;
                     } else if (instrList[f].instr == MINUS) {
                         if (instrList[f].offset === 0n) {
-                            result.push(new Instruction(SET, new Value(new Constant(0n)), 0n, line, char));
+                            result.push(new Instruction(SET, new Value(new Constant(0n)), offset, line, char));
                         } else {
                             result.push(new Instruction(RELATIVE_MINUS, new Value(
                                 // tape[index + offset] += x + y * tape[z + index]
@@ -47,13 +47,13 @@ function multWhile(file) {
                                 new Constant(0n),                            // x
                                 new Constant(instrList[f].value.constant()), // y
                                 new Register(0n)                             // z
-                            ), instrList[f].offset                           // offset
+                            ), instrList[f].offset + offset                  // offset
                             , line, char
                             ));
                         }
                         continue;
                     } else if (instrList[f].instr == SET) {
-                        result.push(new Instruction(CHECK_SET, new Value(new Constant(0n), new Register(0n), new Constant(instrList[f].value.constant())), instrList[f].offset, line, char));
+                        result.push(new Instruction(CHECK_SET, new Value(new Constant(0n), new Register(0n), new Constant(instrList[f].value.constant())), instrList[f].offset + offset, line, char));
                         continue;
                     } else {
                         compilerError("Invalid relative instruction [%s].", instrList[f].toString());

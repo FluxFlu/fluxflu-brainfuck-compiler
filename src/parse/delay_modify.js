@@ -1,5 +1,6 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { LEFT, RIGHT, SET, RELATIVE_SET, PLUS, CHECK_SET, MINUS } = require("../types/instructions");
+const { SET, RELATIVE_SET, PLUS, CHECK_SET, MINUS } = require("../types/instructions");
+const { Rules } = require("../types/rules");
 const { Container } = require("../types/token");
 const { Constant, Register } = require("../types/value");
 const { byte } = require("../utils/toByte");
@@ -9,7 +10,7 @@ function hasMovement(token, offset) {
         return token.contents.some(e => hasMovement(e, offset));
     } else {
         return (
-            [LEFT, RIGHT].includes(token.instr)
+            token.is(Rules.Moves())
             || [SET, CHECK_SET, RELATIVE_SET].includes(token.instr) && token.offset == offset
         );
     }

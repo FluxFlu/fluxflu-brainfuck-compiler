@@ -2,22 +2,34 @@ const { logError } = require("../error/log_error");
 
 const shorthand = new Map([
     ["o", "output"],
+    ["o0", "-O0"],
+    ["o1", "-O1"],
+    ["o2", "-O2"],
 ]);
 
 const flags = new Map([
+    ["-O0", false],
+    ["-O1", false],
+    ["-O2", false],
+
     ["heap-memory", false],
+    ["slow-optimize", false],
     ["final", false],
     ["output", ""],
     ["filename", ""],
     ["raw", false],
     ["colors", false],
-    
+
+    // TODO: Add optional underflow reset.
+    // ["ignore-underflow", false],
+
     ["tape-size", "3000"],
 ]);
 
 // These flags consume a value.
 const flagConsumes = new Map([
-    "tape-size", "output"
+    "tape-size",
+    "output",
 ].map(e => [e, true]));
 
 const wasSpecified = new Map();

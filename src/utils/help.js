@@ -10,13 +10,20 @@ module.exports = `
   Options                                           Description
 --------------------------------------------------------------------------------
 
-  --help -h                                         Display help message
+  --help -h                                         Display help message.
 
-  --full-optimize -f                                Apply all optimization levels
-  --final                                           Don't include debug in runtime
-  --heap-memory                                     Put the tape on the heap
+  -O0                                               Don't optimize code.
+  -O1                                               Apply the default optimizations.
+  -O2                                               Apply extra optimizations.
 
-  --output -o   <filename>                          Specify output filename
+  --final                                           Don't include debug checks.
+  --heap-memory                                     Put the tape on the heap.
+
+  --slow-optimize                                   Many checks are in place to prevent
+                                                    the optimize from running for too long.
+                                                    This flag removes those checks.
+
+  --output -o   <filename>                          Specify output filename.
 
   --tape-size   <size>                              Specify tape size.
                                                     Must be a positive integer.

@@ -10,10 +10,11 @@ function calculateOffsets(file) {
         if (file[i].instr == RIGHT) {
             currentOffset += file[i].value.constant();
             continue;
-        }
-        if (file[i].instr == LEFT) {
+        } else if (file[i].instr == LEFT) {
             currentOffset -= file[i].value.constant();
             continue;
+        } else if (file[i] instanceof Container && !file[i].is(Rules.InterruptOffset())) {
+            file[i].pass(calculateOffsets);
         }
 
         if (file[i].is(Rules.InterruptOffset())) {
@@ -25,14 +26,23 @@ function calculateOffsets(file) {
                 }
                 currentOffset = 0n;
             }
-        }
-        if (file[i] instanceof Container) {
-            file[i].pass(calculateOffsets);
+
+            if (file[i] instanceof Container) {
+                file[i].pass(calculateOffsets);
+            }
         }
         
-        file[i]?.value?.contents?.filter(e => e instanceof Register)?.forEach(e => {
-            e.data += currentOffset;
-        });
+        const modOffsets = token => {
+            if (token instanceof Instruction) {
+                token.value.contents.filter(e => e instanceof Register)?.forEach(e => {
+                    e.data += currentOffset;
+                });
+            } else {
+                token.contents.forEach(modOffsets);
+            }
+        };
+        modOffsets(file[i]);
+        
         file[i].offset += currentOffset;
 
         result.push(file[i]);

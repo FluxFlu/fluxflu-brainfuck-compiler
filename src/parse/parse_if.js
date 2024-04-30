@@ -1,5 +1,5 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { WHILE, SET, IF, END } = require("../types/instructions");
+const { WHILE, SET, IF, END, STILL_WHILE } = require("../types/instructions");
 const { Rules } = require("../types/rules");
 const { Container } = require("../types/token");
 
@@ -7,7 +7,7 @@ function parseIf(file) {
     const result = [];
     for (let i = 0; i < file.length; i++) {
         if (file[i] instanceof Container) {
-            if (file[i].instr == WHILE) {
+            if ([WHILE, STILL_WHILE].includes(file[i].instr)) {
                 let arr = file[i].contents;
                 if (
                     arr.at(-2)?.instr == SET && arr.at(-2).value.constant() == 0n && arr.at(-2).offset == 0n ||

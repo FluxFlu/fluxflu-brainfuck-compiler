@@ -1,6 +1,6 @@
 const { compilerError } = require("../error/internal_compiler_error");
-const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, PRINT, RELATIVE_PLUS, RELATIVE_MINUS, END, CHECK_SET, RELATIVE_SET, IF } = require("../types/instructions");
-const { Constant, Register } = require("../types/value");
+const { PLUS, MINUS, LEFT, RIGHT, WHILE, INPUT, OUTPUT, SET, RELATIVE_PLUS, RELATIVE_MINUS, END, CHECK_SET, RELATIVE_SET, IF, START_LOOP, END_LOOP, CONST_PRINT, STILL_WHILE, SCAN_LEFT, SCAN_RIGHT } = require("../types/instructions");
+const { Constant, Register, StringConstant } = require("../types/value");
 const { RESET, RED, BOLD_BLUE } = require("../utils/colors");
 const { getCompilerFlag } = require("../utils/compiler_flags");
 
@@ -12,7 +12,10 @@ const binding = new Map([
         ({value, offset}) => `\tp[${offset}] -= ${value.emit(null)};`
     ],
     [ LEFT,
-        ({value}) => `\tif (p - ${value.emit(null)} > tape) p -= ${value.emit(null)}; else p = tape;`
+        ({value}) =>
+            `\tp -= ${value.emit(null)};` +
+            (getCompilerFlag("final") ? "" :
+                " if (p < tape) {puts(dbgString); return 1;}")
     ],
     [ RIGHT,
         ({value}) => {
@@ -35,8 +38,11 @@ const binding = new Map([
     [ OUTPUT,
         ({offset}) => `\tputchar(p[${offset}]);`
     ],
-    [ PRINT,
-        ({value}) => `\tputs("${value.emit(null)}");`
+    [ CONST_PRINT,
+        ({value}) => {
+            value.forceMatch(StringConstant);
+            return `\tfputs(${value.emit(null)}, stdout);`;
+        }
     ],
     [ SET,
         ({value, offset}) => value ? `\tp[${offset}] = ${value.emit(null)};` : `\tp[${offset}] = 0;`
@@ -98,11 +104,46 @@ const binding = new Map([
             return `\tif (${token.value.contents[0].emit()} + p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[2].emit()};`;
         }
     ],
+    [ SCAN_LEFT,
+        (token) => {
+            token.value.forceMatch(Constant);
+            if (token.value.constant() === 1n) {
+                return "\tif (!gnu) { p = (char*)((char*)(memrchr(tape, 0, p - tape + 1))); } else { while (*p) { p--; }; };";
+            } else {
+                return `\twhile (*p) { p -= ${token.value.constant()}; };`;
+            }
+        }
+    ],
+    [ SCAN_RIGHT,
+        (token) => {
+            token.value.forceMatch(Constant);
+            if (token.value.constant() === 1n) {
+                return "\tp = (char*)(memchr(p, 0, sizeof(tape)));";
+            } else {
+                return `\twhile (*p) { p += ${token.value.constant()}; };`;
+            }
+        }
+    ],
     [ END,
         () => ""
     ],
+    [ START_LOOP,
+        () => "\twhile (*p) {\n"
+    ],
+    [ END_LOOP,
+        () => "}"
+    ],
     [ WHILE,
         ({contents}, indent) => "\twhile (*p) {\n" + emitTokens(contents, indent + 1) + "}"
+    ],
+    [ STILL_WHILE,
+        ({contents, offset}, indent) => {
+            return "\twhile (p[" + offset + "]) {\n" + emitTokens(contents.map(token => {
+                token = token.copy();
+                token.offset += offset;
+                return token;
+            }), indent + 1) + "}";
+        }
     ],
     [
         IF,
@@ -111,16 +152,8 @@ const binding = new Map([
 ]);
 
 
-let hasMoved = false;
-
-
 function emitTokens(tokens, indent = 0) {
     return tokens.map((e, i) => {
-        if (tokens[i].instr !== SET && tokens[i].instr !== PRINT) {
-            hasMoved = true;
-        } else if (tokens[i].instr === SET && !hasMoved && tokens[i].value.constant() == 0n) {
-            return;
-        }
         if (!binding.has(tokens[i].instr)) {
             compilerError("Invalid instruction [%s].", tokens[i].toString());
         }
@@ -129,22 +162,30 @@ function emitTokens(tokens, indent = 0) {
 }
 
 function emit(tokens) {
-    let output = "#include <stdio.h>\n";
-    if (getCompilerFlag("heap-memory")) {
-        output += "#include <stdlib.h>\n";
-    }
+    let output = "";
+    output += (
+        "#ifdef __GNUC__\n" +
+        "\t#define _GNU_SOURCE\n" +
+        "\tconst int gnu = 1;\n" +
+        "#else\n" +
+        "\tconst int gnu = 0;\n" +
+        "#endif\n"
+    );
+    output += "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n";
     if (!getCompilerFlag("final")) {
         output += "const char* dbgString = \"" + RED + "Runtime Error:" + RESET + " Moved further than the tape allows. You can extend the length of the tape using " + BOLD_BLUE + "--tape-size {number}" + RESET + "\\n\";\n";
     }
-    output += "int main() {\n\t";
-    if (getCompilerFlag("heap-memory")) {
-        output += "char* tape = malloc(" + getCompilerFlag("tape-size") + ");\n\ttape[0] = 0;\n\tchar* size = tape;\n\t";
-    } else {
-        output += "char tape[" + getCompilerFlag("tape-size") + "] = {0};\n\t";
+    output += "\nint main() {\n";
+    if (!tokens.static) {
+        if (getCompilerFlag("heap-memory")) {
+            output += "\tchar* tape = malloc(" + getCompilerFlag("tape-size") + ");\n\ttape[0] = 0;\n\tchar* size = tape;\n\t";
+        } else {
+            output += "\tchar tape[" + getCompilerFlag("tape-size") + "] = {0};\n\t";
+        }
+        output += "char* p = tape;\n\n";
     }
-    output += "char* p = tape;\n\n";
     output += emitTokens(tokens);
-    return output + "\n\n\treturn 0;\n}";
+    return output + (tokens.static ? "" : "\n") + "\n\treturn EXIT_SUCCESS;\n}";
 }
 
 module.exports = { emit };

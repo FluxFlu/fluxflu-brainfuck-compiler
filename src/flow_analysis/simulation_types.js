@@ -1,5 +1,6 @@
 const { compilerError } = require("../error/internal_compiler_error");
 const { ValueType } = require("../types/value");
+const { getCompilerFlag } = require("../utils/compiler_flags");
 
 class SimValue {
     constructor() {}
@@ -69,13 +70,16 @@ class Union extends SimValue {
         }
         return new Union(...values);
     }
+    every(fn) {
+        return Array.from(this.values).every(fn);
+    }
     format() {
         return Array.from(this.values).map(e => e.format()).join(" | ");
     }
 }
 
 class Unknown extends SimValue {
-    static NumPossibleValues = 4;
+    static NumPossibleValues = getCompilerFlag("slow-optimize") ? 6 : 4;
     constructor() {
         super();
     }

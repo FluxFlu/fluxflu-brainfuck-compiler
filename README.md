@@ -3,7 +3,7 @@
 
 </h1>
 <h3 align="center">
-    The fastest optimizing brainfuck compiler.
+    A fast optimizing brainfuck compiler.
 </h3>
 
 <div align="center">

@@ -3,6 +3,7 @@ const { compilerError } = require("../error/internal_compiler_error");
 const Rules = {
     // For these instructions, increasing the token's value is equal to adding a new token with value 1.
     // For example, "PLUS(1), PLUS(1), PLUS(1), PLUS(1)" == "PLUS(4)".
+    // This also applies to strings, such as with CONST_PRINT.
     Repeatable: null,
     
     // These instructions experience single byte overflow.
@@ -36,6 +37,15 @@ const Rules = {
     // And in which the result follows the pattern:
     // ( $plus, $mult, %register) => plus + mult * register
     RegisterType: null,
+
+    // These operators need no offset, and for the purposes of sorting, have an offset of -Infinity.
+    NullOffset: null,
+
+    // These operators don't perform IO. For exmaple, this rule includes PLUS and SET, but not INPUT and OUTPUT.
+    DoesNotOutput: null,
+
+    // These operators move the index in the tape. Eg. LEFT, RIGHT, SCAN_LEFT.
+    Moves: null,
 };
 
 Object.keys(Rules).forEach((key, index) => {
