@@ -31,7 +31,7 @@
   "scripts": {
     "test": "node ./test/test.js",
     "lint": "npx eslint ./ --global \"__dirname,process\"",
-    "build": "pkg ./build/fbc.js --out-path ./build -C=Brotli"
+    "build": "nexe --build --target linux -o fbc-linux && nexe --build --target mac -o fbc-mac && nexe --build --target windows -o fbc-win"
   },
   "devDependencies": {
     "eslint": "^8.56.0"
