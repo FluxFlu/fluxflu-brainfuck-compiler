@@ -56,10 +56,10 @@ const binding = new Map([
             
             let base = `p[${token.offset}] += `;
             if (add != "0") {
-                base += `${add} + `;
+                base += `(char)(${add}) + `;
             }
             if (mult != "1") {
-                base += `${mult} * `;
+                base += `(char)(${mult}) * `;
             }
             return "\t" + base + value;
         }
@@ -73,10 +73,10 @@ const binding = new Map([
             
             let base = `p[${token.offset}] -= `;
             if (add != "0") {
-                base += `${add} + `;
+                base += `(char)(${add}) + `;
             }
             if (mult != "1") {
-                base += `${mult} * `;
+                base += `(char)(${mult}) * `;
             }
             return "\t" + base + value;
         }
@@ -90,10 +90,10 @@ const binding = new Map([
             
             let base = `p[${token.offset}] = `;
             if (add != "0") {
-                base += `${add} + `;
+                base += `(char)(${add}) + `;
             }
             if (mult != "1") {
-                base += `${mult} * `;
+                base += `(char)(${mult}) * `;
             }
             return "\t" + base + value;
         }
@@ -101,7 +101,7 @@ const binding = new Map([
     [ CHECK_SET,
         (token) => {
             token.value.forceMatch(Constant, Register, Constant);
-            return `\tif (${token.value.contents[0].emit()} + p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[2].emit()};`;
+            return `\tif ((char)(${token.value.contents[0].emit()}) + p[${token.value.contents[1].emit()}]) p[${token.offset}] = ${token.value.contents[2].emit()};`;
         }
     ],
     [ SCAN_LEFT,
